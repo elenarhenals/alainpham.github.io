@@ -4,14 +4,40 @@ date: 2020-04-27 05:00:00 +0200
 title: "Geocoding in R Using Google Maps API"
 ---
 
+<head>
+  <style>
+    table {
+      width:100%;
+}
+    table, th, td {
+      border: 1px solid grey;
+      border-collapse: collapse;
+}
+    th, td {
+      padding: 15px;
+      text-align: left;
+}
+    table#t01 tr:nth-child(even) {
+      background-color: #eee;
+}
+table#t01 tr:nth-child(odd) {
+ background-color: #fff;
+}
+table#t01 th {
+  background-color: grey;
+  color: white;
+}
+</style>
+</head>
+
 <p>When dealing with unstandardized address strings, it’s often challenging to extract the country detail because it can present itself anywhere in the string. In this post, I will explain how to use Google Maps Geocoding API to get your address strings in order and to extract the country name and code.</p>
 <p>I am currently working on a project to help an international bank assess the quality of customer data in wire payment messages. To give you a better understanding of what information these messages may include, I found this example from the SWIFT Payment Formatting Guide for Financial Institutions.</p>
 <br></br>
-<table>
+<table id="t01">
 <thead>
 <tr class="header">
-<th background-color: #4CAF50; color: white; align="left">Tag</th>
-<th background-color: #4CAF50; color: white; align="left">Name</th>
+<th align="left">Tag</th>
+<th align="left">Name</th>
 </tr>
 </thead>
 <tbody>
@@ -81,7 +107,8 @@ title: "Geocoding in R Using Google Maps API"
 <p>There is a big issue with that because it’s tough to parse unstructured data like this accurately, and yet it is critical for the banks’ ability to timely detect and stop payments relating to fraud or money laundering.</p>
 <p>The country of the originating customer for incoming wires and the country of the beneficiary customer for outgoing wires are critical pieces of information in this regard. In this post, I will show you how you can standardize unstructured address strings and extract the country detail using geocoding with Google Maps API.</p>
 <p>Ok. Let’s begin, shall we?</p>
-<div id="step-1---prep-your-data" class="section level4">
+<div id="step-1---prep-your-data" class="level4">
+                                        
 <h4>Step 1 - Prep your data</h4>
 <p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
 <p>For this demonstration, I put together a list of 5 addresses generated from a Google search of the world’s best restaurants. I modified them a bit, so they look similar to the unstructured address strings that can come through in the wire messages.</p>
@@ -739,7 +766,7 @@ title: "Geocoding in R Using Google Maps API"
 <p>Back in 2017, SWIFT announced that it would remove free-format message fields to ensure that payer and beneficiary data is systematically captured and exchanged. This change is expected to take effect in November 2020. In the meantime, the banks need to be vigilant in ensuring the quality of their data.</p>
 </div>
 </div>
-</section>
+
 
 
 
