@@ -13,7 +13,7 @@
   <meta name="twitter:title" content="{{page.title}}">
 
 
-  <meta name="description" content="{{ post.excerpt | strip_html | truncatewords:75 }}>
+  <meta name="description" content="{{ post.excerpt | remove: '<p>' | remove: '</p>' }}>
 	
   <link rel="canonical" href="{{site.url}}{{page.url}}" />
   <meta property="og:url" content="{{site.url}}{{page.url}}" />
@@ -47,7 +47,7 @@
 "@type": "BlogPosting",
 "headline": "{{page.title}}",
 "datePublished": "{{ page.published | date_to_xmlschema }}",
-"description": "{{ post.excerpt | strip_html | truncatewords:75 }}",
+"description": "{{ post.excerpt | remove: '<p>' | remove: '</p>' }}",
 
 "url": "{{site.url}}{{page.url}}"}</script>
 
@@ -58,7 +58,7 @@
 {"@context": "http://schema.org",
 "@type": "WebSite",
 "headline": "{{page.title}}",
-"description": "{{ post.excerpt | strip_html | truncatewords:75 }}",
+"description": "{{ post.excerpt | remove: '<p>' | remove: '</p>' }}",
  "url": "{{site.url}}{{page.url}}"}</script>
   {% endif %}
 
