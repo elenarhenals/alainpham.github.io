@@ -112,7 +112,14 @@ table#t01 th {
 <h4>Step 1 - Prep your data</h4>
 <p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
 <p>For this demonstration, I put together a list of 5 addresses generated from a Google search of the world’s best restaurants. I modified them a bit, so they look similar to the unstructured address strings that can come through in the wire messages.</p>
-
+<p>
+ <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#read you data in</span></a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3">addresses &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;addresses.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+</p>
+<p>
 <table id="t01">
 <thead>
 <tr class="header">
@@ -149,7 +156,15 @@ table#t01 th {
 </tr>
 </tbody>
 </table>
-
+</p>
+<p>
+ <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#concatenate the address columns with unite()</span></a>
+<a class="sourceLine" id="cb2-2" title="2">addresses &lt;-<span class="st"> </span>addresses<span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="st">  </span><span class="kw">unite</span>(<span class="st">&quot;org_address&quot;</span>, ORIGINATOR_ADDRESS_<span class="dv">1</span>, ORIGINATOR_ADDRESS_<span class="dv">2</span>, ORIGINATOR_ADDRESS_<span class="dv">3</span>, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+</p>
+<p>
 <table id="t01">
 <thead>
 <tr class="header">
