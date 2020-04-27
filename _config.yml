@@ -13,8 +13,8 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Elena's R Blog
-name: Elena's R Blog
+title: "Elena's R Blog"
+name: "Elena's R Blog"
 description: 
 Week 6 of COVID lockdown...
 People are doing different things to keep themselves busy. Netflix subscription numbers are record high. Alcohol sales are up. Social media has exploded with viral challenges.
