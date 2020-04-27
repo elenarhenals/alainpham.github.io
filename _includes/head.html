@@ -8,7 +8,7 @@
   <title>{{ page.title }}</title>
   <meta property="og:title" content="{{ page.title }}" />
   
-  <meta name="description" content="{{ post.excerpt | remove: '<img>' | remove: '<br>' }}>
+  <meta name="description" content="{{ post.excerpt | remove: '<img>' | remove: '<title>' }}>
 	
   <link rel="canonical" href="{{ site.url }}{{ page.url }}" />
   <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
@@ -38,7 +38,7 @@
 "@type": "BlogPosting",
 "headline": "{{ page.title }}",
 "datePublished": "{{ page.published | date_to_xmlschema }}",
-"description": "{{ post.excerpt | remove: '<img>' | remove: '<br>' }}",
+"description": "{{ post.excerpt | remove: '<img>' | remove: '<title>' }}",
 "url": "{{site.url}}{{page.url}}"}</script>
 
   {% else %} <!-- its not an article -->
@@ -48,7 +48,7 @@
 {"@context": "http://schema.org",
 "@type": "WebSite",
 "headline": "{{ page.title }}",
-"description": "{{ post.excerpt | remove: '<img>' | remove: '<br>' }}",
+"description": "{{ post.excerpt | remove: '<img>' | remove: '<title>' }}",
  "url": "{{site.url}}{{page.url}}"}</script>
   {% endif %}
 
