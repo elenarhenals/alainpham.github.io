@@ -2,7 +2,7 @@
 layout: default
 title: "Geocoding in R Using Google Maps API"
 date: 2020-04-27 05:00:00 +0200
-published: true
+published: 2020-04-27 05:00:00 +0200
 comments: true
 categories: development
 tags: [geocoding, R, Google Maps, API]
