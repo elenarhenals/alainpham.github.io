@@ -102,11 +102,12 @@ table#t01 th {
 </tr>
 </tbody>
 </table>
-<br></br>
+
 <p>For example, you can see that Tag 50 Ordering Customer, consists of a number of data elements that are all bundled in a string of characters. The address data is usually mapped to 3 lines, but there is no clear structure as to wich line holds which address element and no clear delimiters to parse the data.</p>
 <p>There is a big issue with that because it’s tough to parse unstructured data like this accurately, and yet it is critical for the banks’ ability to timely detect and stop payments relating to fraud or money laundering.</p>
 <p>The country of the originating customer for incoming wires and the country of the beneficiary customer for outgoing wires are critical pieces of information in this regard. In this post, I will show you how you can standardize unstructured address strings and extract the country detail using geocoding with Google Maps API.</p>
 <p>Ok. Let’s begin, shall we?</p>
+
 <div id="step-1---prep-your-data" class="section level3">                                       
 <h3>Step 1 - Prep your data</h3>
 <p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
@@ -189,14 +190,15 @@ table#t01 th {
 </tbody>
 </table>
 </div>
+
 </p>
 <div id="step-2---dedupe-your-data" class="section level3">
 <h3>Step 2 - Dedupe your data</h3>
 <p>Create a vector of unique addresses by using the unique() function. In this demonstration, we only have 5 unique addresses. Still, in the real world data such as customer information, there will always be duplicates. Deduping the address data helps reduce the number of Google Maps API calls.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
 </div>
-
-<h4>Step 3 - Get set up with Google Maps Geocoding API</h4>
+<div id="step-3---get-set-up-with-google-maps-geocoding-api" class="section level3">
+<h3>Step 3 - Get set up with Google Maps Geocoding API</h3>
 <p>Let’s get everything ready for our API calls. First of all, if you have never used Google Maps API, you will have to register and obtain your key.</p>
 <ol style="list-style-type: decimal">
 <li>Go to <a href="https://cloud.google.com/maps-platform" class="uri">https://cloud.google.com/maps-platform</a></li>
@@ -209,7 +211,8 @@ table#t01 th {
 </ol>
 <p>It’s that easy!</p>
 </div>
-<h2>Step 4 - Calling Google Maps API</h2>
+<div id="step-4---calling-google-maps-api" class="section level3">
+<h3>Step 4 - Calling Google Maps API</h3>
 <p>Now, we are ready for geocoding with Google Maps API!</p>
 <p>You will need to install the ggmap package in your R Studio if you haven’t installed it already and then register your API key. Google will only authorize the API calls coming from registered users.</p>
 <p>
@@ -244,6 +247,8 @@ table#t01 th {
 <p>Here is what we got from Google Maps.</p>
 <p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">knitr<span class="op">::</span><span class="kw">kable</span>(org_address_std)</a></code></pre></div>
+</p>
+<p>
 <table id="t01">
 <colgroup>
 <col width="100%"></col>
@@ -444,7 +449,8 @@ table#t01 th {
 </p>
 <p>You can see that this is a deeply nested list, which is going to be challenging to work with. Luckily, there are some great packages available in R for working with such data structures. Specifically, I am talking about purr and tidyr that will help us extract and unnest list elements.</p>
 </div>
-<h2>Step 5 - Extracting the country detail</h2>
+<div id="step-5---extracting-the-country-detail" class="section level3">
+<h3>Step 5 - Extracting the country detail</h3>
 <p>Before we can extract anything, we need to examine the structure of the list object we are working with. As shown below, our list contains 2 main elements: results and status. The results element consists of 6 other elements with sub-elements of their own.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">str</span>(address_all)</a></code></pre></div>
 <pre><code>## List of 2
@@ -740,10 +746,12 @@ table#t01 th {
 <div id="step-7---tying-it-back-together" class="section level4">
 <h4>Step 7 - Tying it back together</h4>
 <p>The remaining step is to add the org_country to our original addresses data, and we are all set.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">addresses &lt;-<span class="st"> </span><span class="kw">cbind</span>(addresses, org_country) </a>
+<p>
+ <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">addresses &lt;-<span class="st"> </span><span class="kw">cbind</span>(addresses, org_country) </a>
 <a class="sourceLine" id="cb36-2" title="2"></a>
 <a class="sourceLine" id="cb36-3" title="3">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
-<table>
+</p>
+ <table id="t01">
 <thead>
 <tr class="header">
 <th align="left">org_address</th>
@@ -783,7 +791,7 @@ table#t01 th {
 <p>I was able to identify several inconsistencies where the country codes generated from parsing messages by the bank’s transaction processing system were inaccurate. Luckily, most of them were caught and corrected after the fact thanks to proper internal controls. But the risk remains until these messages adhere to a better-structured format using explicit delimiters and standardized address formats.</p>
 <p>Back in 2017, SWIFT announced that it would remove free-format message fields to ensure that payer and beneficiary data is systematically captured and exchanged. This change is expected to take effect in November 2020. In the meantime, the banks need to be vigilant in ensuring the quality of their data.</p>
 </div>
-</div>
+
 
 
 
