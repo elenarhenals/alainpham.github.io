@@ -7,14 +7,14 @@ title: "Geocoding in R Using Google Maps API"
 <head>
   <style>
     table {
-      width:100%;
+      width:80%;
 }
     table, th, td {
       border: 1px solid grey;
       border-collapse: collapse;
 }
     th, td {
-      padding: 15px;
+      padding: 5px;
       text-align: left;
 }
     table#t01 tr:nth-child(even) {
@@ -24,7 +24,7 @@ table#t01 tr:nth-child(odd) {
  background-color: #fff;
 }
 table#t01 th {
-  background-color: grey;
+  background-color: #159999;
   color: white;
 }
 </style>
@@ -32,7 +32,7 @@ table#t01 th {
 
 <p>When dealing with unstandardized address strings, it’s often challenging to extract the country detail because it can present itself anywhere in the string. In this post, I will explain how to use Google Maps Geocoding API to get your address strings in order and to extract the country name and code.</p>
 <p>I am currently working on a project to help an international bank assess the quality of customer data in wire payment messages. To give you a better understanding of what information these messages may include, I found this example from the SWIFT Payment Formatting Guide for Financial Institutions.</p>
-<br></br>
+
 <table id="t01">
 <thead>
 <tr class="header">
@@ -103,6 +103,7 @@ table#t01 th {
 </tr>
 </tbody>
 </table>
+<br></br>
 <p>For example, you can see that Tag 50 Ordering Customer, consists of a number of data elements that are all bundled in a string of characters. The address data is usually mapped to 3 lines, but there is no clear structure as to wich line holds which address element and no clear delimiters to parse the data.</p>
 <p>There is a big issue with that because it’s tough to parse unstructured data like this accurately, and yet it is critical for the banks’ ability to timely detect and stop payments relating to fraud or money laundering.</p>
 <p>The country of the originating customer for incoming wires and the country of the beneficiary customer for outgoing wires are critical pieces of information in this regard. In this post, I will show you how you can standardize unstructured address strings and extract the country detail using geocoding with Google Maps API.</p>
@@ -112,11 +113,7 @@ table#t01 th {
 <h4>Step 1 - Prep your data</h4>
 <p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
 <p>For this demonstration, I put together a list of 5 addresses generated from a Google search of the world’s best restaurants. I modified them a bit, so they look similar to the unstructured address strings that can come through in the wire messages.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#read you data in</span></a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3">addresses &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;addresses.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4"></a>
-<a class="sourceLine" id="cb1-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+
 <table id="t01">
 <thead>
 <tr class="header">
