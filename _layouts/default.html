@@ -19,8 +19,13 @@
 		    <i class="fa fa-github fa-2x"></i>  {{ page.github }}
 			</a>
 	</p>
-	
+	{% endif %}
+	<hr>
+	<h1>Abstract</h1>
+	{% endif %}
+
 	{{ content }}
+
 
 	{% if page.id %}
 	<p>Originally published {{ page.published | date: '%B %d, %Y' }}
@@ -41,7 +46,9 @@
 			  {% endfor %}
 		{% endfor %}
 		</ul>
-		{% include disqus.html %}
+	{% endif %}
+
+	{% include disqus.html %}
 	</div>
 	{% include footer.html %}
 	{% include analytics.html %}
