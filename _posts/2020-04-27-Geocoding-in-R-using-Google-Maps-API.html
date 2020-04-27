@@ -192,12 +192,11 @@ table#t01 th {
 </table>
 </p>
 
-<h3>Step 2 - Dedupe your data</h3>
+<h4>Step 2 - Dedupe your data</h4>
 <p>Create a vector of unique addresses by using the unique() function. In this demonstration, we only have 5 unique addresses. Still, in the real world data such as customer information, there will always be duplicates. Deduping the address data helps reduce the number of Google Maps API calls.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
-</div>
-<div id="step-3---get-set-up-with-google-maps-geocoding-api" class="section level3">
-<h3>Step 3 - Get set up with Google Maps Geocoding API</h3>
+
+<h4>Step 3 - Get set up with Google Maps Geocoding API</h4>
 <p>Let’s get everything ready for our API calls. First of all, if you have never used Google Maps API, you will have to register and obtain your key.</p>
 <ol style="list-style-type: decimal">
 <li>Go to <a href="https://cloud.google.com/maps-platform" class="uri">https://cloud.google.com/maps-platform</a></li>
