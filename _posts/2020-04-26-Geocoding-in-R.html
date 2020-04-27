@@ -1,0 +1,746 @@
+---
+layout: default
+title: "Geocoding in R"
+date: 2020-04-26 05:00:00 +0200
+comments: true
+categories: development
+tags: [geocoding, Google Maps, API, parsing, R]
+github: "https://github.com/elenarhenals/Geocoding-in-R"
+---
+
+
+<p>When dealing with unstandardized address strings, it’s often challenging to extract the country detail because it can present itself anywhere in the string. In this post, I will explain how to use Google Maps Geocoding API to get your address strings in order and to extract the country name and code.</p>
+<p>I am currently working on a project to help an international bank assess the quality of customer data in wire payment messages. To give you a better understanding of what information these messages may include, I found this example from the SWIFT Payment Formatting Guide for Financial Institutions.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Tag</th>
+<th align="left">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">20</td>
+<td align="left">Transaction reference number</td>
+</tr>
+<tr class="even">
+<td align="left">23B</td>
+<td align="left">Bank operation code</td>
+</tr>
+<tr class="odd">
+<td align="left">32A</td>
+<td align="left">Value date / currency / interbank settled</td>
+</tr>
+<tr class="even">
+<td align="left">33B</td>
+<td align="left">Currency / original ordered amount</td>
+</tr>
+<tr class="odd">
+<td align="left">50A, F or K</td>
+<td align="left">Ordering customer (payer) or address of the remitter.</td>
+</tr>
+<tr class="even">
+<td align="left">52A or D</td>
+<td align="left">Ordering institution (payer’s bank)</td>
+</tr>
+<tr class="odd">
+<td align="left">53A, B or D</td>
+<td align="left">Sender’s correspondent (bank)</td>
+</tr>
+<tr class="even">
+<td align="left">54A, B or D</td>
+<td align="left">Receiver’s correspondent (bank)</td>
+</tr>
+<tr class="odd">
+<td align="left">56A, C or D</td>
+<td align="left">Intermediary (bank)</td>
+</tr>
+<tr class="even">
+<td align="left">57A, B, C or D</td>
+<td align="left">Account with institution (beneficiary’s bank)</td>
+</tr>
+<tr class="odd">
+<td align="left">59 or 59A</td>
+<td align="left">Beneficiary</td>
+</tr>
+<tr class="even">
+<td align="left">70</td>
+<td align="left">Remittance information</td>
+</tr>
+<tr class="odd">
+<td align="left">71A</td>
+<td align="left">Details of charges (OUR/SHA/BEN)</td>
+</tr>
+<tr class="even">
+<td align="left">72</td>
+<td align="left">Sender to receiver information</td>
+</tr>
+<tr class="odd">
+<td align="left">77B</td>
+<td align="left">Regulatory reporting</td>
+</tr>
+</tbody>
+</table>
+<p>For example, you can see that Tag 50 Ordering Customer, consists of a number of data elements that are all bundled in a string of characters. The address data is usually mapped to 3 lines, but there is no clear structure as to wich line holds which address element and no clear delimiters to parse the data.</p>
+<p>There is a big issue with that because it’s tough to parse unstructured data like this accurately, and yet it is critical for the banks’ ability to timely detect and stop payments relating to fraud or money laundering.</p>
+<p>The country of the originating customer for incoming wires and the country of the beneficiary customer for outgoing wires are critical pieces of information in this regard. In this post, I will show you how you can standardize unstructured address strings and extract the country detail using geocoding with Google Maps API.</p>
+<p>Ok. Let’s begin, shall we?</p>
+<div id="step-1---prep-your-data" class="section level4">
+<h4>Step 1 - Prep your data</h4>
+<p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
+<p>For this demonstration, I put together a list of 5 addresses generated from a Google search of the world’s best restaurants. I modified them a bit, so they look similar to the unstructured address strings that can come through in the wire messages.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#read you data in</span></a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3">addresses &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;addresses.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ORIGINATOR_ADDRESS_1</th>
+<th align="left">ORIGINATOR_ADDRESS_2</th>
+<th align="left">ORIGINATOR_ADDRESS_3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18N CanalRd</td>
+<td align="left">Singapore</td>
+<td align="left">48830</td>
+</tr>
+<tr class="even">
+<td align="left">Cra. 13 #8525 BogotáColombia</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">RUSSIA 109004 G MOSKVA</td>
+<td align="left">UL DOBROVOLCHESKAYA DOM 12</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">127 Ledbury Rd, Notting H</td>
+<td align="left">ill, London</td>
+<td align="left">W11 2AQ</td>
+</tr>
+<tr class="odd">
+<td align="left">Shop 4C-D Tower 1 PL/F, China HK City</td>
+<td align="left">33 Canton road</td>
+<td align="left">Tsim Sha Tsui</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#concatenate the address columns with unite()</span></a>
+<a class="sourceLine" id="cb2-2" title="2">addresses &lt;-<span class="st"> </span>addresses<span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="st">  </span><span class="kw">unite</span>(<span class="st">&quot;org_address&quot;</span>, ORIGINATOR_ADDRESS_<span class="dv">1</span>, ORIGINATOR_ADDRESS_<span class="dv">2</span>, ORIGINATOR_ADDRESS_<span class="dv">3</span>, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">org_address</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18N CanalRd Singapore 48830</td>
+</tr>
+<tr class="even">
+<td align="left">Cra. 13 #8525 BogotáColombia</td>
+</tr>
+<tr class="odd">
+<td align="left">RUSSIA 109004 G MOSKVA UL DOBROVOLCHESKAYA DOM 12</td>
+</tr>
+<tr class="even">
+<td align="left">127 Ledbury Rd, Notting H ill, London W11 2AQ</td>
+</tr>
+<tr class="odd">
+<td align="left">Shop 4C-D Tower 1 PL/F, China HK City 33 Canton road Tsim Sha Tsui</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="step-2---dedupe-your-data" class="section level4">
+<h4>Step 2 - Dedupe your data</h4>
+<p>Create a vector of unique addresses by using the unique() function. In this demonstration, we only have 5 unique addresses. Still, in the real world data such as customer information, there will always be duplicates. Deduping the address data helps reduce the number of Google Maps API calls.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
+</div>
+<div id="step-3---get-set-up-with-google-maps-geocoding-api" class="section level4">
+<h4>Step 3 - Get set up with Google Maps Geocoding API</h4>
+<p>Let’s get everything ready for our API calls. First of all, if you have never used Google Maps API, you will have to register and obtain your key.</p>
+<ol style="list-style-type: decimal">
+<li>Go to <a href="https://cloud.google.com/maps-platform" class="uri">https://cloud.google.com/maps-platform</a></li>
+<li>Click Get Started</li>
+<li>Sign in with your Google account or create one</li>
+<li>Proceed with setting up the billing. Google will give you a free $300 credit that should be enough for about 200,000 calls.</li>
+<li>Once signed up, go to the Maps API library and find Geocoding API</li>
+<li>Click on it and then click Enable</li>
+<li>Go to your credentials and copy your key</li>
+</ol>
+<p>It’s that easy!</p>
+</div>
+<div id="step-4---calling-google-maps-api" class="section level4">
+<h4>Step 4 - Calling Google Maps API</h4>
+<p>Now, we are ready for geocoding with Google Maps API!</p>
+<p>You will need to install the ggmap package in your R Studio if you haven’t installed it already and then register your API key. Google will only authorize the API calls coming from registered users.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(ggmap)</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">register_google</span>(<span class="dt">key =</span> mykey)</a></code></pre></div>
+<p>Once the key is registered, we can start making API calls. The geocode() function provides several outputs, as shown below. You can select whichever is more applicable to your project.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;latlon&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 1 x 2
+##     lon   lat
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  104.  1.29</code></pre>
+<p>If you set output to “latlon,” the function will only return the latitude and the longitude of the location.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;more&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 1 x 9
+##     lon   lat type        loctype address                north south  east  west
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  104.  1.29 street_add~ rooftop 18 n canal rd, singap~  1.29  1.28  104.  104.</code></pre>
+<p>The output option “more” returns additional information, including the address in a standartized format which is always handy. If your goal is to standartize addresses, you can stop here. Just put your API request call inside a for loop to save yourself some time, as shown below.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">org_address_std &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;Address_std&quot;</span>=<span class="ot">NA</span>)</a>
+<a class="sourceLine" id="cb9-2" title="2"></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(org_address)){</a>
+<a class="sourceLine" id="cb9-4" title="4">  address &lt;-<span class="st"> </span><span class="kw">geocode</span>(org_address[i], <span class="dt">output=</span><span class="st">&quot;more&quot;</span>, <span class="dt">override_limit =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb9-5" title="5">  <span class="cf">if</span>(<span class="kw">ncol</span>(address)<span class="op">&gt;=</span><span class="dv">5</span>){ <span class="co">#only proceeds if the API call was successful</span></a>
+<a class="sourceLine" id="cb9-6" title="6">  org_address_std[i,<span class="dv">1</span>] &lt;-<span class="st"> </span>address<span class="op">$</span>address</a>
+<a class="sourceLine" id="cb9-7" title="7">  }</a>
+<a class="sourceLine" id="cb9-8" title="8">}</a></code></pre></div>
+<p>Here is what we got from Google Maps.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">knitr<span class="op">::</span><span class="kw">kable</span>(org_address_std)</a></code></pre></div>
+<table>
+<colgroup>
+<col width="100%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Address_std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18 n canal rd, singapore 048830</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">dobrovol’cheskaya st, moskva, russia, 109004</td>
+</tr>
+<tr class="even">
+<td align="left">127 ledbury rd, notting hill, london w11 2aq, uk</td>
+</tr>
+<tr class="odd">
+<td align="left">shop 4c-d, tower 1, pl/f, china hong kong city, 33 canton road, tsim sha tsui, hong kong</td>
+</tr>
+</tbody>
+</table>
+<p>Compare our results with the original addresses above. Looks much better to me!</p>
+<p>Of course, there will always be addresses that Google is not able to identify or identifies incorrectly. It’s especially true when dealing with international addresses, so I highly recommend reviewing your results before proceeding to the next step. To help Google Maps do a better job, you can clean up your address strings by removing odd characters such as accent marks or irregular punctuation.</p>
+<p>Let’s go back to our original addresses data set and clean up the 2nd address from the top that wasn’t recognized by Google Maps.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">addresses[<span class="dv">2</span>,<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">str_remove_all</span>(<span class="kw">iconv</span>(addresses[<span class="dv">2</span>,<span class="dv">1</span>], <span class="dt">to=</span><span class="st">&#39;ASCII//TRANSLIT&#39;</span>), <span class="st">&quot;#&quot;</span>)</a>
+<a class="sourceLine" id="cb11-2" title="2"></a>
+<a class="sourceLine" id="cb11-3" title="3">addresses[<span class="dv">2</span>,<span class="dv">1</span>]</a></code></pre></div>
+<pre><code>## [1] &quot;Cra. 13 8525 BogotaColombia  &quot;</code></pre>
+<p>Now let’s see if Google Maps recognizes this address.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">geocode</span>(<span class="st">&quot;Cra. 13 8525 BogotaColombia&quot;</span>, <span class="dt">output =</span> <span class="st">&quot;more&quot;</span>)</a></code></pre></div>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=Cra.+13+8525+BogotaColombia&amp;key=xxx</code></pre>
+<pre><code>## # A tibble: 1 x 9
+##     lon   lat type       loctype      address            north south  east  west
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 -74.1  4.67 street_ad~ range_inter~ cra. 13 #85-25, b~  4.67  4.67 -74.1 -74.1</code></pre>
+<p>Perfect! Let’s update our address vector.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
+<p>Finally, the last output option we will review here is “all.” We are going to use this option to access the country detail. Take a look at the output below.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">address_all &lt;-<span class="st"> </span><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;all&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">address_all</a></code></pre></div>
+<pre><code>## $results
+## $results[[1]]
+## $results[[1]]$address_components
+## $results[[1]]$address_components[[1]]
+## $results[[1]]$address_components[[1]]$long_name
+## [1] &quot;18&quot;
+## 
+## $results[[1]]$address_components[[1]]$short_name
+## [1] &quot;18&quot;
+## 
+## $results[[1]]$address_components[[1]]$types
+## $results[[1]]$address_components[[1]]$types[[1]]
+## [1] &quot;street_number&quot;
+## 
+## 
+## 
+## $results[[1]]$address_components[[2]]
+## $results[[1]]$address_components[[2]]$long_name
+## [1] &quot;North Canal Road&quot;
+## 
+## $results[[1]]$address_components[[2]]$short_name
+## [1] &quot;N Canal Rd&quot;
+## 
+## $results[[1]]$address_components[[2]]$types
+## $results[[1]]$address_components[[2]]$types[[1]]
+## [1] &quot;route&quot;
+## 
+## 
+## 
+## $results[[1]]$address_components[[3]]
+## $results[[1]]$address_components[[3]]$long_name
+## [1] &quot;Singapore River&quot;
+## 
+## $results[[1]]$address_components[[3]]$short_name
+## [1] &quot;Singapore River&quot;
+## 
+## $results[[1]]$address_components[[3]]$types
+## $results[[1]]$address_components[[3]]$types[[1]]
+## [1] &quot;neighborhood&quot;
+## 
+## $results[[1]]$address_components[[3]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## $results[[1]]$address_components[[4]]
+## $results[[1]]$address_components[[4]]$long_name
+## [1] &quot;Singapore&quot;
+## 
+## $results[[1]]$address_components[[4]]$short_name
+## [1] &quot;Singapore&quot;
+## 
+## $results[[1]]$address_components[[4]]$types
+## $results[[1]]$address_components[[4]]$types[[1]]
+## [1] &quot;locality&quot;
+## 
+## $results[[1]]$address_components[[4]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## $results[[1]]$address_components[[5]]
+## $results[[1]]$address_components[[5]]$long_name
+## [1] &quot;Singapore&quot;
+## 
+## $results[[1]]$address_components[[5]]$short_name
+## [1] &quot;SG&quot;
+## 
+## $results[[1]]$address_components[[5]]$types
+## $results[[1]]$address_components[[5]]$types[[1]]
+## [1] &quot;country&quot;
+## 
+## $results[[1]]$address_components[[5]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## $results[[1]]$address_components[[6]]
+## $results[[1]]$address_components[[6]]$long_name
+## [1] &quot;048830&quot;
+## 
+## $results[[1]]$address_components[[6]]$short_name
+## [1] &quot;048830&quot;
+## 
+## $results[[1]]$address_components[[6]]$types
+## $results[[1]]$address_components[[6]]$types[[1]]
+## [1] &quot;postal_code&quot;
+## 
+## 
+## 
+## 
+## $results[[1]]$formatted_address
+## [1] &quot;18 N Canal Rd, Singapore 048830&quot;
+## 
+## $results[[1]]$geometry
+## $results[[1]]$geometry$location
+## $results[[1]]$geometry$location$lat
+## [1] 1.286275
+## 
+## $results[[1]]$geometry$location$lng
+## [1] 103.8483
+## 
+## 
+## $results[[1]]$geometry$location_type
+## [1] &quot;ROOFTOP&quot;
+## 
+## $results[[1]]$geometry$viewport
+## $results[[1]]$geometry$viewport$northeast
+## $results[[1]]$geometry$viewport$northeast$lat
+## [1] 1.287624
+## 
+## $results[[1]]$geometry$viewport$northeast$lng
+## [1] 103.8496
+## 
+## 
+## $results[[1]]$geometry$viewport$southwest
+## $results[[1]]$geometry$viewport$southwest$lat
+## [1] 1.284926
+## 
+## $results[[1]]$geometry$viewport$southwest$lng
+## [1] 103.8469
+## 
+## 
+## 
+## 
+## $results[[1]]$place_id
+## [1] &quot;ChIJ_WZSrgsZ2jERm6wZgPqIiw0&quot;
+## 
+## $results[[1]]$plus_code
+## $results[[1]]$plus_code$compound_code
+## [1] &quot;7RPX+G8 Singapore&quot;
+## 
+## $results[[1]]$plus_code$global_code
+## [1] &quot;6PH57RPX+G8&quot;
+## 
+## 
+## $results[[1]]$types
+## $results[[1]]$types[[1]]
+## [1] &quot;street_address&quot;
+## 
+## 
+## 
+## 
+## $status
+## [1] &quot;OK&quot;</code></pre>
+<p>You can see that this is a deeply nested list, which is going to be challenging to work with. Luckily, there are some great packages available in R for working with such data structures. Specifically, I am talking about purr and tidyr that will help us extract and unnest list elements.</p>
+</div>
+<div id="step-5---extracting-the-country-detail" class="section level4">
+<h4>Step 5 - Extracting the country detail</h4>
+<p>Before we can extract anything, we need to examine the structure of the list object we are working with. As shown below, our list contains 2 main elements: results and status. The results element consists of 6 other elements with sub-elements of their own.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">str</span>(address_all)</a></code></pre></div>
+<pre><code>## List of 2
+##  $ results:List of 1
+##   ..$ :List of 6
+##   .. ..$ address_components:List of 6
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;18&quot;
+##   .. .. .. ..$ short_name: chr &quot;18&quot;
+##   .. .. .. ..$ types     :List of 1
+##   .. .. .. .. ..$ : chr &quot;street_number&quot;
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;North Canal Road&quot;
+##   .. .. .. ..$ short_name: chr &quot;N Canal Rd&quot;
+##   .. .. .. ..$ types     :List of 1
+##   .. .. .. .. ..$ : chr &quot;route&quot;
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;Singapore River&quot;
+##   .. .. .. ..$ short_name: chr &quot;Singapore River&quot;
+##   .. .. .. ..$ types     :List of 2
+##   .. .. .. .. ..$ : chr &quot;neighborhood&quot;
+##   .. .. .. .. ..$ : chr &quot;political&quot;
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;Singapore&quot;
+##   .. .. .. ..$ short_name: chr &quot;Singapore&quot;
+##   .. .. .. ..$ types     :List of 2
+##   .. .. .. .. ..$ : chr &quot;locality&quot;
+##   .. .. .. .. ..$ : chr &quot;political&quot;
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;Singapore&quot;
+##   .. .. .. ..$ short_name: chr &quot;SG&quot;
+##   .. .. .. ..$ types     :List of 2
+##   .. .. .. .. ..$ : chr &quot;country&quot;
+##   .. .. .. .. ..$ : chr &quot;political&quot;
+##   .. .. ..$ :List of 3
+##   .. .. .. ..$ long_name : chr &quot;048830&quot;
+##   .. .. .. ..$ short_name: chr &quot;048830&quot;
+##   .. .. .. ..$ types     :List of 1
+##   .. .. .. .. ..$ : chr &quot;postal_code&quot;
+##   .. ..$ formatted_address : chr &quot;18 N Canal Rd, Singapore 048830&quot;
+##   .. ..$ geometry          :List of 3
+##   .. .. ..$ location     :List of 2
+##   .. .. .. ..$ lat: num 1.29
+##   .. .. .. ..$ lng: num 104
+##   .. .. ..$ location_type: chr &quot;ROOFTOP&quot;
+##   .. .. ..$ viewport     :List of 2
+##   .. .. .. ..$ northeast:List of 2
+##   .. .. .. .. ..$ lat: num 1.29
+##   .. .. .. .. ..$ lng: num 104
+##   .. .. .. ..$ southwest:List of 2
+##   .. .. .. .. ..$ lat: num 1.28
+##   .. .. .. .. ..$ lng: num 104
+##   .. ..$ place_id          : chr &quot;ChIJ_WZSrgsZ2jERm6wZgPqIiw0&quot;
+##   .. ..$ plus_code         :List of 2
+##   .. .. ..$ compound_code: chr &quot;7RPX+G8 Singapore&quot;
+##   .. .. ..$ global_code  : chr &quot;6PH57RPX+G8&quot;
+##   .. ..$ types             :List of 1
+##   .. .. ..$ : chr &quot;street_address&quot;
+##  $ status : chr &quot;OK&quot;</code></pre>
+<p>For my project, I need to extract the country long and short names. The challenge with it is that the number of elements is not static and varies from one address to the next, which means that the position of the country element changes too.</p>
+<p>We can handle this problem by using the pluck() and unnest_wider() functions from purrr and tidyr packages, respectively. They will help us put the data in a structured data frame object. The str_detect() function from the stringr package will help us get the index of the row containing the country detail.</p>
+<p>First, we extract the list elements we need with the pluck() function. In my case, I need to extract address_components. The function requires you to specify the element’s position within the list. The address_components element is positioned at the top of the 3rd sublist of the address_all list. To extract the information from it, we will need to pass the indexes 1, 1, 1 to the function, as shown below.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">address_components &lt;-<span class="st"> </span><span class="kw">pluck</span>(address_all, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb22-2" title="2">address_components</a></code></pre></div>
+<pre><code>## [[1]]
+## [[1]]$long_name
+## [1] &quot;18&quot;
+## 
+## [[1]]$short_name
+## [1] &quot;18&quot;
+## 
+## [[1]]$types
+## [[1]]$types[[1]]
+## [1] &quot;street_number&quot;
+## 
+## 
+## 
+## [[2]]
+## [[2]]$long_name
+## [1] &quot;North Canal Road&quot;
+## 
+## [[2]]$short_name
+## [1] &quot;N Canal Rd&quot;
+## 
+## [[2]]$types
+## [[2]]$types[[1]]
+## [1] &quot;route&quot;
+## 
+## 
+## 
+## [[3]]
+## [[3]]$long_name
+## [1] &quot;Singapore River&quot;
+## 
+## [[3]]$short_name
+## [1] &quot;Singapore River&quot;
+## 
+## [[3]]$types
+## [[3]]$types[[1]]
+## [1] &quot;neighborhood&quot;
+## 
+## [[3]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## [[4]]
+## [[4]]$long_name
+## [1] &quot;Singapore&quot;
+## 
+## [[4]]$short_name
+## [1] &quot;Singapore&quot;
+## 
+## [[4]]$types
+## [[4]]$types[[1]]
+## [1] &quot;locality&quot;
+## 
+## [[4]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## [[5]]
+## [[5]]$long_name
+## [1] &quot;Singapore&quot;
+## 
+## [[5]]$short_name
+## [1] &quot;SG&quot;
+## 
+## [[5]]$types
+## [[5]]$types[[1]]
+## [1] &quot;country&quot;
+## 
+## [[5]]$types[[2]]
+## [1] &quot;political&quot;
+## 
+## 
+## 
+## [[6]]
+## [[6]]$long_name
+## [1] &quot;048830&quot;
+## 
+## [[6]]$short_name
+## [1] &quot;048830&quot;
+## 
+## [[6]]$types
+## [[6]]$types[[1]]
+## [1] &quot;postal_code&quot;</code></pre>
+<p>Next, we will use the unnest_wider() function in order to convert the data format from its current list type to a data frame. All unnest functions from the tidyr package work only with the data frame type objects, so, first, we need to put our list into a data frame format. We do it with the tibble() function, as shown below.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">address_components_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">cols =</span> address_components)</a>
+<a class="sourceLine" id="cb24-2" title="2">address_components_df</a></code></pre></div>
+<pre><code>## # A tibble: 6 x 1
+##   cols            
+##   &lt;list&gt;          
+## 1 &lt;named list [3]&gt;
+## 2 &lt;named list [3]&gt;
+## 3 &lt;named list [3]&gt;
+## 4 &lt;named list [3]&gt;
+## 5 &lt;named list [3]&gt;
+## 6 &lt;named list [3]&gt;</code></pre>
+<p>You can see that the resulting data frame consistst of 6 rows, each containing a list of 3 elements.</p>
+<p>The unnest_wider() function will help us turn each element of the list into a column. The function requires to specify a vector with the names of the list elements that we want to convert, which we can quickly achieve with the names() function.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">cols &lt;-<span class="st"> </span><span class="kw">names</span>(address_components_df<span class="op">$</span>cols[[<span class="dv">1</span>]])</a>
+<a class="sourceLine" id="cb26-2" title="2">cols</a></code></pre></div>
+<pre><code>## [1] &quot;long_name&quot;  &quot;short_name&quot; &quot;types&quot;</code></pre>
+<p>Now, let’s use the unnest_wider() function on our data frame to see how it works.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">address_components_df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest_wider</span>(cols) </a></code></pre></div>
+<pre><code>## # A tibble: 6 x 3
+##   long_name        short_name      types     
+##   &lt;chr&gt;            &lt;chr&gt;           &lt;list&gt;    
+## 1 18               18              &lt;list [1]&gt;
+## 2 North Canal Road N Canal Rd      &lt;list [1]&gt;
+## 3 Singapore River  Singapore River &lt;list [2]&gt;
+## 4 Singapore        Singapore       &lt;list [2]&gt;
+## 5 Singapore        SG              &lt;list [2]&gt;
+## 6 048830           048830          &lt;list [1]&gt;</code></pre>
+<p>You notice that the types column still contains the list-type objects because it has an additional nested element which was not taken care of by the first unnest function. To extract this data, we need to apply the same function one more time, but now only to the types column.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">address_components_df &lt;-<span class="st"> </span>address_components_df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest_wider</span>(cols) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest_wider</span>(<span class="st">&quot;types&quot;</span>) </a>
+<a class="sourceLine" id="cb30-2" title="2"></a>
+<a class="sourceLine" id="cb30-3" title="3">address_components_df &lt;-<span class="st"> </span>address_components_df <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-4" title="4"><span class="st">  </span><span class="kw">unite</span>(<span class="st">&quot;Type&quot;</span>, <span class="dv">3</span><span class="op">:</span><span class="kw">ncol</span>(address_components_df), <span class="dt">sep=</span><span class="st">&quot; &quot;</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="co">#we need to concatenate all the possible types fields to facilitate string matching</span></a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">long_name</th>
+<th align="left">short_name</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18</td>
+<td align="left">18</td>
+<td align="left">street_number</td>
+</tr>
+<tr class="even">
+<td align="left">North Canal Road</td>
+<td align="left">N Canal Rd</td>
+<td align="left">route</td>
+</tr>
+<tr class="odd">
+<td align="left">Singapore River</td>
+<td align="left">Singapore River</td>
+<td align="left">neighborhood political</td>
+</tr>
+<tr class="even">
+<td align="left">Singapore</td>
+<td align="left">Singapore</td>
+<td align="left">locality political</td>
+</tr>
+<tr class="odd">
+<td align="left">Singapore</td>
+<td align="left">SG</td>
+<td align="left">country political</td>
+</tr>
+<tr class="even">
+<td align="left">048830</td>
+<td align="left">048830</td>
+<td align="left">postal_code</td>
+</tr>
+</tbody>
+</table>
+<p>Now, all we need to do is to find the index of the row containing the country detail which is accomplished with str_detect() function.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">row_index &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">str_detect</span>(address_components_df<span class="op">$</span>Type, <span class="st">&quot;country&quot;</span>)<span class="op">==</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb31-2" title="2">row_index</a></code></pre></div>
+<pre><code>## [1] 5</code></pre>
+<p>Great! Now we know the row that we need to extract to get the country detail. Let’s see what it gets us.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">address_components_df[row_index, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a></code></pre></div>
+<pre><code>## # A tibble: 1 x 2
+##   long_name short_name
+##   &lt;chr&gt;     &lt;chr&gt;     
+## 1 Singapore SG</code></pre>
+<p>Exactly what we needed!</p>
+</div>
+<div id="step-6---adding-efficiency-with-a-for-loop" class="section level4">
+<h4>Step 6 - Adding efficiency with a for loop</h4>
+<p>To make this process more efficient we can create a for loop that will go through all the steps above for every single address in our list and save us loads of time.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">org_country &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;long_name&quot;</span>=<span class="ot">NA</span>, <span class="st">&quot;short_name&quot;</span> =<span class="st"> </span><span class="ot">NA</span>) <span class="co">#creating a shell</span></a>
+<a class="sourceLine" id="cb35-2" title="2"></a>
+<a class="sourceLine" id="cb35-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(org_address)){</a>
+<a class="sourceLine" id="cb35-4" title="4">  address &lt;-<span class="st"> </span><span class="kw">geocode</span>(org_address[i], <span class="dt">output=</span><span class="st">&quot;all&quot;</span>)</a>
+<a class="sourceLine" id="cb35-5" title="5">  </a>
+<a class="sourceLine" id="cb35-6" title="6">  <span class="cf">if</span>(<span class="op">!</span><span class="kw">is.data.frame</span>(address)){ <span class="co">#only proceed if the call was successful</span></a>
+<a class="sourceLine" id="cb35-7" title="7">    </a>
+<a class="sourceLine" id="cb35-8" title="8">    address_components &lt;-<span class="st"> </span><span class="kw">pluck</span>(address, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb35-9" title="9">    address_components_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">cols =</span> address_components)</a>
+<a class="sourceLine" id="cb35-10" title="10">    </a>
+<a class="sourceLine" id="cb35-11" title="11">    address_components_df &lt;-<span class="st"> </span>address_components_df <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb35-12" title="12"><span class="st">      </span><span class="kw">unnest_wider</span>(cols) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest_wider</span>(<span class="st">&quot;types&quot;</span>) </a>
+<a class="sourceLine" id="cb35-13" title="13">    </a>
+<a class="sourceLine" id="cb35-14" title="14">    address_components_df &lt;-<span class="st"> </span>address_components_df <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb35-15" title="15"><span class="st">      </span><span class="kw">unite</span>(<span class="st">&quot;Type&quot;</span>, <span class="dv">3</span><span class="op">:</span><span class="kw">ncol</span>(address_components_df), <span class="dt">sep=</span><span class="st">&quot; &quot;</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb35-16" title="16">  </a>
+<a class="sourceLine" id="cb35-17" title="17">    row_index &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">str_detect</span>(address_components_df<span class="op">$</span>Type, <span class="st">&quot;country&quot;</span>)<span class="op">==</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb35-18" title="18">    </a>
+<a class="sourceLine" id="cb35-19" title="19">    org_country[i, ] &lt;-<span class="st"> </span>address_components_df[row_index, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb35-20" title="20">  }</a>
+<a class="sourceLine" id="cb35-21" title="21">}</a>
+<a class="sourceLine" id="cb35-22" title="22"></a>
+<a class="sourceLine" id="cb35-23" title="23">knitr<span class="op">::</span><span class="kw">kable</span>(org_country)</a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">long_name</th>
+<th align="left">short_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Singapore</td>
+<td align="left">SG</td>
+</tr>
+<tr class="even">
+<td align="left">Colombia</td>
+<td align="left">CO</td>
+</tr>
+<tr class="odd">
+<td align="left">Russia</td>
+<td align="left">RU</td>
+</tr>
+<tr class="even">
+<td align="left">United Kingdom</td>
+<td align="left">GB</td>
+</tr>
+<tr class="odd">
+<td align="left">Hong Kong</td>
+<td align="left">HK</td>
+</tr>
+</tbody>
+</table>
+<p>Voila! Doesn’t it look great?</p>
+</div>
+<div id="step-7---tying-it-back-together" class="section level4">
+<h4>Step 7 - Tying it back together</h4>
+<p>The remaining step is to add the org_country to our original addresses data, and we are all set.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">addresses &lt;-<span class="st"> </span><span class="kw">cbind</span>(addresses, org_country) </a>
+<a class="sourceLine" id="cb36-2" title="2"></a>
+<a class="sourceLine" id="cb36-3" title="3">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">org_address</th>
+<th align="left">long_name</th>
+<th align="left">short_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18N CanalRd Singapore 48830</td>
+<td align="left">Singapore</td>
+<td align="left">SG</td>
+</tr>
+<tr class="even">
+<td align="left">Cra. 13 8525 BogotaColombia</td>
+<td align="left">Colombia</td>
+<td align="left">CO</td>
+</tr>
+<tr class="odd">
+<td align="left">RUSSIA 109004 G MOSKVA UL DOBROVOLCHESKAYA DOM 12</td>
+<td align="left">Russia</td>
+<td align="left">RU</td>
+</tr>
+<tr class="even">
+<td align="left">127 Ledbury Rd, Notting H ill, London W11 2AQ</td>
+<td align="left">United Kingdom</td>
+<td align="left">GB</td>
+</tr>
+<tr class="odd">
+<td align="left">Shop 4C-D Tower 1 PL/F, China HK City 33 Canton road Tsim Sha Tsui</td>
+<td align="left">Hong Kong</td>
+<td align="left">HK</td>
+</tr>
+</tbody>
+</table>
+<p>In my project, I had about 2,000 unique originator addresses and 2,500 unique beneficiary addresses. Fortunately, Google was able to recognize most of them correctly, and I only had to manually review about a hundred observations, which is not bad at all.</p>
+<p>I was able to identify several inconsistencies where the country codes generated from parsing messages by the bank’s transaction processing system were inaccurate. Luckily, most of them were caught and corrected after the fact thanks to proper internal controls. But the risk remains until these messages adhere to a better-structured format using explicit delimiters and standardized address formats.</p>
+<p>Back in 2017, SWIFT announced that it would remove free-format message fields to ensure that payer and beneficiary data is systematically captured and exchanged. This change is expected to take effect in November 2020. In the meantime, the banks need to be vigilant in ensuring the quality of their data.</p>
+</div>
+</div>
+
