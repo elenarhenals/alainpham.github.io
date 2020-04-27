@@ -7,7 +7,7 @@ title: "Geocoding in R Using Google Maps API"
 <head>
   <style>
     table {
-      width:80%;
+      width:100%;
 }
     table, th, td {
       border: 1px solid grey;
@@ -107,9 +107,8 @@ table#t01 th {
 <p>There is a big issue with that because it’s tough to parse unstructured data like this accurately, and yet it is critical for the banks’ ability to timely detect and stop payments relating to fraud or money laundering.</p>
 <p>The country of the originating customer for incoming wires and the country of the beneficiary customer for outgoing wires are critical pieces of information in this regard. In this post, I will show you how you can standardize unstructured address strings and extract the country detail using geocoding with Google Maps API.</p>
 <p>Ok. Let’s begin, shall we?</p>
-<div id="step-1---prep-your-data" class="level4">
-                                        
-<h4>Step 1 - Prep your data</h4>
+                                       
+<h2>Step 1 - Prep your data</h2>
 <p>Review your address field(s). Make sure you have the entire address in one string. If you need to concatenate some columns to achieve that, such as in my case, you can use the unite() function from the tidyr package. I would strongly recommend removing any trailing white space, which is common in unstructured address strings. You can do it with the base trimws() function.</p>
 <p>For this demonstration, I put together a list of 5 addresses generated from a Google search of the world’s best restaurants. I modified them a bit, so they look similar to the unstructured address strings that can come through in the wire messages.</p>
 <p>
@@ -190,12 +189,12 @@ table#t01 th {
 </tbody>
 </table>
 </div>
-<div id="step-2---dedupe-your-data" class="section level4">
-<h4>Step 2 - Dedupe your data</h4>
+</p>
+<h2>Step 2 - Dedupe your data</h2>
 <p>Create a vector of unique addresses by using the unique() function. In this demonstration, we only have 5 unique addresses. Still, in the real world data such as customer information, there will always be duplicates. Deduping the address data helps reduce the number of Google Maps API calls.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
 </div>
-<div id="step-3---get-set-up-with-google-maps-geocoding-api" class="section level4">
+
 <h4>Step 3 - Get set up with Google Maps Geocoding API</h4>
 <p>Let’s get everything ready for our API calls. First of all, if you have never used Google Maps API, you will have to register and obtain your key.</p>
 <ol style="list-style-type: decimal">
@@ -209,10 +208,10 @@ table#t01 th {
 </ol>
 <p>It’s that easy!</p>
 </div>
-<div id="step-4---calling-google-maps-api" class="section level4">
-<h4>Step 4 - Calling Google Maps API</h4>
+<h2>Step 4 - Calling Google Maps API</h2>
 <p>Now, we are ready for geocoding with Google Maps API!</p>
 <p>You will need to install the ggmap package in your R Studio if you haven’t installed it already and then register your API key. Google will only authorize the API calls coming from registered users.</p>
+<p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(ggmap)</a>
 <a class="sourceLine" id="cb4-2" title="2"></a>
 <a class="sourceLine" id="cb4-3" title="3"><span class="kw">register_google</span>(<span class="dt">key =</span> mykey)</a></code></pre></div>
@@ -222,13 +221,16 @@ table#t01 th {
 ##     lon   lat
 ##   &lt;dbl&gt; &lt;dbl&gt;
 ## 1  104.  1.29</code></pre>
+</p>
 <p>If you set output to “latlon,” the function will only return the latitude and the longitude of the location.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;more&quot;</span>)</a></code></pre></div>
+<p><div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;more&quot;</span>)</a></code></pre></div>
 <pre><code>## # A tibble: 1 x 9
 ##     lon   lat type        loctype address                north south  east  west
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;                  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ## 1  104.  1.29 street_add~ rooftop 18 n canal rd, singap~  1.29  1.28  104.  104.</code></pre>
+</p>
 <p>The output option “more” returns additional information, including the address in a standartized format which is always handy. If your goal is to standartize addresses, you can stop here. Just put your API request call inside a for loop to save yourself some time, as shown below.</p>
+<p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">org_address_std &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;Address_std&quot;</span>=<span class="ot">NA</span>)</a>
 <a class="sourceLine" id="cb9-2" title="2"></a>
 <a class="sourceLine" id="cb9-3" title="3"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(org_address)){</a>
@@ -237,9 +239,11 @@ table#t01 th {
 <a class="sourceLine" id="cb9-6" title="6">  org_address_std[i,<span class="dv">1</span>] &lt;-<span class="st"> </span>address<span class="op">$</span>address</a>
 <a class="sourceLine" id="cb9-7" title="7">  }</a>
 <a class="sourceLine" id="cb9-8" title="8">}</a></code></pre></div>
+</p>
 <p>Here is what we got from Google Maps.</p>
+<p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">knitr<span class="op">::</span><span class="kw">kable</span>(org_address_std)</a></code></pre></div>
-<table>
+<table id="t01">
 <colgroup>
 <col width="100%"></col>
 </colgroup>
@@ -266,21 +270,27 @@ table#t01 th {
 </tr>
 </tbody>
 </table>
+</p>
 <p>Compare our results with the original addresses above. Looks much better to me!</p>
 <p>Of course, there will always be addresses that Google is not able to identify or identifies incorrectly. It’s especially true when dealing with international addresses, so I highly recommend reviewing your results before proceeding to the next step. To help Google Maps do a better job, you can clean up your address strings by removing odd characters such as accent marks or irregular punctuation.</p>
 <p>Let’s go back to our original addresses data set and clean up the 2nd address from the top that wasn’t recognized by Google Maps.</p>
+<p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">addresses[<span class="dv">2</span>,<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">str_remove_all</span>(<span class="kw">iconv</span>(addresses[<span class="dv">2</span>,<span class="dv">1</span>], <span class="dt">to=</span><span class="st">&#39;ASCII//TRANSLIT&#39;</span>), <span class="st">&quot;#&quot;</span>)</a>
 <a class="sourceLine" id="cb11-2" title="2"></a>
 <a class="sourceLine" id="cb11-3" title="3">addresses[<span class="dv">2</span>,<span class="dv">1</span>]</a></code></pre></div>
 <pre><code>## [1] &quot;Cra. 13 8525 BogotaColombia  &quot;</code></pre>
+</p>
 <p>Now let’s see if Google Maps recognizes this address.</p>
+<p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">geocode</span>(<span class="st">&quot;Cra. 13 8525 BogotaColombia&quot;</span>, <span class="dt">output =</span> <span class="st">&quot;more&quot;</span>)</a></code></pre></div>
 <pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=Cra.+13+8525+BogotaColombia&amp;key=xxx</code></pre>
 <pre><code>## # A tibble: 1 x 9
 ##     lon   lat type       loctype      address            north south  east  west
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ## 1 -74.1  4.67 street_ad~ range_inter~ cra. 13 #85-25, b~  4.67  4.67 -74.1 -74.1</code></pre>
+</p>
 <p>Perfect! Let’s update our address vector.</p>
+<p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">org_address &lt;-<span class="st"> </span><span class="kw">unique</span>(addresses<span class="op">$</span>org_address)</a></code></pre></div>
 <p>Finally, the last output option we will review here is “all.” We are going to use this option to access the country detail. Take a look at the output below.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">address_all &lt;-<span class="st"> </span><span class="kw">geocode</span>(org_address[<span class="dv">1</span>], <span class="dt">output=</span><span class="st">&quot;all&quot;</span>)</a></code></pre></div>
@@ -430,10 +440,10 @@ table#t01 th {
 ## 
 ## $status
 ## [1] &quot;OK&quot;</code></pre>
+</p>
 <p>You can see that this is a deeply nested list, which is going to be challenging to work with. Luckily, there are some great packages available in R for working with such data structures. Specifically, I am talking about purr and tidyr that will help us extract and unnest list elements.</p>
 </div>
-<div id="step-5---extracting-the-country-detail" class="section level4">
-<h4>Step 5 - Extracting the country detail</h4>
+<h2>Step 5 - Extracting the country detail</h2>
 <p>Before we can extract anything, we need to examine the structure of the list object we are working with. As shown below, our list contains 2 main elements: results and status. The results element consists of 6 other elements with sub-elements of their own.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">str</span>(address_all)</a></code></pre></div>
 <pre><code>## List of 2
