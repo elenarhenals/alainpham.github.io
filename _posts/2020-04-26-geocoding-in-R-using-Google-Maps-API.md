@@ -2,7 +2,7 @@
 layout: default
 title: "Geocoding in R Using Google Maps API"
 date: 2020-04-27 05:00:00 +0200
-published: 2020-04-27 05:00:00 +0200
+published: false
 comments: true
 categories: development
 tags: [geocoding, R, Google Maps, API]
@@ -38,25 +38,32 @@ Institutions.
 | 72             | Sender to receiver information                        |
 | 77B            | Regulatory reporting                                  |
 
+<p>
 For example, you can see that Tag 50 Ordering Customer, consists of a
 number of data elements that are all bundled in a string of characters.
 The address data is usually mapped to 3 lines, but there is no clear
 structure as to wich line holds which address element and no clear
 delimiters to parse the data.
+</p>
 
+<p>
 There is a big issue with that because it’s tough to parse unstructured
 data like this accurately, and yet it is critical for the banks’ ability
 to timely detect and stop payments relating to fraud or money
 laundering.
+</p>
 
+<p>
 The country of the originating customer for incoming wires and the
 country of the beneficiary customer for outgoing wires are critical
 pieces of information in this regard. In this post, I will show you how
 you can standardize unstructured address strings and extract the country
 detail using geocoding with Google Maps API.
+</p>
 
+<p>
 Ok. Let’s begin, shall we?
-
+</p>
 #### Step 1 - Prep your data
 
 Review your address field(s). Make sure you have the entire address in
