@@ -13,7 +13,7 @@
   <meta name="twitter:title" content="{{page.title}}">
 
 
-  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="description" content="{{ post.excerpt | strip_html | truncatewords:75 }}>
 	
   <link rel="canonical" href="{{site.url}}{{page.url}}" />
   <meta property="og:url" content="{{site.url}}{{page.url}}" />
@@ -47,7 +47,7 @@
 "@type": "BlogPosting",
 "headline": "{{page.title}}",
 "datePublished": "{{ page.published | date_to_xmlschema }}",
-"description": "{{page.description}}",
+"description": "{{ post.excerpt | strip_html | truncatewords:75 }}",
 
 "url": "{{site.url}}{{page.url}}"}</script>
 
@@ -58,7 +58,7 @@
 {"@context": "http://schema.org",
 "@type": "WebSite",
 "headline": "{{page.title}}",
-"description": "{{page.description}}",
+"description": "{{ post.excerpt | strip_html | truncatewords:75 }}",
  "url": "{{site.url}}{{page.url}}"}</script>
   {% endif %}
 
