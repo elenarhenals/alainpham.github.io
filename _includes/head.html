@@ -13,16 +13,8 @@
   <meta name="twitter:title" content="{{page.title}}">
 
 
-  {% if page.description %}
-	  <meta name="description" content="{{page.description}}" />
-	  <meta property="og:description" content="{{page.description}}" />
-	  <meta name="twitter:description" content="{{page.description}}">
-
-  {% else %}
-	  <meta name="description" content="{{page.excerpt | strip_html | strip}}" />
-	  <meta property="og:description" content="{{page.excerpt | strip_html| strip}}" />
-	  <meta name="twitter:description" content="{{page.excerpt | strip_html| strip}}">
-  {% endif %}
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+	
   <link rel="canonical" href="{{site.url}}{{page.url}}" />
   <meta property="og:url" content="{{site.url}}{{page.url}}" />
   <meta name="twitter:url" content="{{site.url}}{{page.url}}">
@@ -55,11 +47,8 @@
 "@type": "BlogPosting",
 "headline": "{{page.title}}",
 "datePublished": "{{ page.published | date_to_xmlschema }}",
-  {% if page.description %}
 "description": "{{page.description}}",
-  {% else %}
-"description": "{{page.excerpt | strip_html}}",
-  {% endif %}
+
 "url": "{{site.url}}{{page.url}}"}</script>
 
   {% else %} <!-- its not an article -->
@@ -69,12 +58,8 @@
 {"@context": "http://schema.org",
 "@type": "WebSite",
 "headline": "{{page.title}}",
-  {% if page.description %}
 "description": "{{page.description}}",
-  {% else %}
-"description": "{{page.excerpt}}",
-  {% endif %}
-"url": "{{site.url}}{{page.url}}"}</script>
+ "url": "{{site.url}}{{page.url}}"}</script>
   {% endif %}
 
   <link rel="author" href="{{site.author}}"/>
