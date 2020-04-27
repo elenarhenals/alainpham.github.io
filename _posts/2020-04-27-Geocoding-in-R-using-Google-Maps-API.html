@@ -32,7 +32,6 @@ table#t01 th {
 
 <p>When dealing with unstandardized address strings, it’s often challenging to extract the country detail because it can present itself anywhere in the string. In this post, I will explain how to use Google Maps Geocoding API to get your address strings in order and to extract the country name and code.</p>
 <p>I am currently working on a project to help an international bank assess the quality of customer data in wire payment messages. To give you a better understanding of what information these messages may include, I found this example from the SWIFT Payment Formatting Guide for Financial Institutions.</p>
-
 <table id="t01">
 <thead>
 <tr class="header">
@@ -150,12 +149,8 @@ table#t01 th {
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#concatenate the address columns with unite()</span></a>
-<a class="sourceLine" id="cb2-2" title="2">addresses &lt;-<span class="st"> </span>addresses<span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="st">  </span><span class="kw">unite</span>(<span class="st">&quot;org_address&quot;</span>, ORIGINATOR_ADDRESS_<span class="dv">1</span>, ORIGINATOR_ADDRESS_<span class="dv">2</span>, ORIGINATOR_ADDRESS_<span class="dv">3</span>, <span class="dt">sep =</span> <span class="st">&quot; &quot;</span>)</a>
-<a class="sourceLine" id="cb2-4" title="4"></a>
-<a class="sourceLine" id="cb2-5" title="5">knitr<span class="op">::</span><span class="kw">kable</span>(addresses)</a></code></pre></div>
-<table>
+
+<table id="t01">
 <thead>
 <tr class="header">
 <th align="left">org_address</th>
