@@ -72,7 +72,7 @@
   {% if page.description %}
 "description": "{{page.description}}",
   {% else %}
-"description": "{{page.excerpt | strip_html}}",
+"description": "{{page.excerpt}}",
   {% endif %}
 "url": "{{site.url}}{{page.url}}"}</script>
   {% endif %}
