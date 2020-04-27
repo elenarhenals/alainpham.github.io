@@ -13,13 +13,15 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Alain's Tech Blog
-name: Alain's Tech Blog
+title: Elena's R Blog
+name: Elena's R Blog
 description: 
-  This is a blog of someone passionate about technology who wants to share some of the things he knows
-  about Application Development, Integration, Cloud, Big Data and Digital Transformation
+Week 6 of COVID lockdown...
+People are doing different things to keep themselves busy. Netflix subscription numbers are record high. Alcohol sales are up. Social media has exploded with viral challenges.
+I am launching my first blog. 
+Here, I will write about all the cool things you can do in R, including data transformation, data visualization, predictive modeling, text mining and more!
 baseurl: "" # the subpath of your site, e.g. /blog
-github_username:  alainpham
+github_username:  elenarhenals
 
 # jekyll-paginate configuration
 paginate: 10
@@ -37,7 +39,7 @@ exclude:
 include: ["_pages"]
 permalink: /posts/:title/
 excerpt_separator: <!--more-->
-author: http://www.linkedin.com/in/alainpham
+author: http://www.linkedin.com/in/elena-rhenals
 
 host: 0.0.0.0
 
