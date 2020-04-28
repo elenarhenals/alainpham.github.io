@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: "Elena's R Blog"
 name: "Elena's R Blog"
-description: Week 6 of COVID lockdown. People do different things to keep themselves busy. Netflix subscription numbers are record high. Alcohol sales are up. Social media has exploded with viral challenges. I am launching my first blog. In this blog I will talk about data and show you many cool things you can do with it using R.
+description: Week 6 of COVID lockdown... | People do different things to keep themselves busy. Netflix subscription numbers are record high. Alcohol sales are up. Social media has exploded with viral challenges. I am launching my first blog. | Here, I will talk about data and show you many cool things you can do with it using R.
 baseurl: "" # the subpath of your site, e.g. /blog
 github_username:  elenarhenals
 
