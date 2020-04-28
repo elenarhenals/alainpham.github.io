@@ -6,7 +6,7 @@ html {
 body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
-	padding-top: 4.5em;
+	padding-top: 3.5em;
 	counter-reset: h1counter;
 	
 }
@@ -40,7 +40,7 @@ h3:before {
 .jumbotron h1 {
 	color: white;
 	letter-spacing: 0.1em;
-	font-size: 2.5em;
+	font-size: 3em;
 	text-align: center;
 	letter-spacing: 0.2em;
 }
