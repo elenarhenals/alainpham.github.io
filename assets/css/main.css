@@ -34,15 +34,14 @@ h3:before {
 }
 
 .jumbotron {
-	background: #719d7d;
+	background: #4db3a5;
 }
 
 .jumbotron h1 {
 	color: white;
-	letter-spacing: 0.2em;
-	font-size: 3em;
+	letter-spacing: 0.1em;
+	font-size: 2.5em;
 	text-align: center;
-	text-transform: uppercase;
 	letter-spacing: 0.2em;
 }
 
