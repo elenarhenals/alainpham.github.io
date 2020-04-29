@@ -739,10 +739,7 @@ tags: [geocoding, Google Maps, API, tidyr, purrr]
 </table>
 </p>
 <p>In my project, I had about 2,000 unique originator addresses and 2,500 unique beneficiary addresses. Fortunately, Google was able to recognize most of them correctly, and I only had to manually review about a hundred observations, which is not bad at all.</p>
-<p>Most importantly, I was able to use the country data that I got from geocoding as a minimum viable model to identify discrepancies in country codes captured in the bank's source systems. </p>
-
-<p> Until these payment messages adhere to a better-structured format using explicit delimiters and standardized address formats, there is always a risk associated with inaccurate or incomplete data.</p>
-<p>Back in 2017, SWIFT announced that it would remove free-format message fields to ensure that payer and beneficiary data is systematically captured and exchanged. This change is expected to take effect in November 2020. In the meantime, the banks need to be vigilant in ensuring the quality of their data.</p>
+<p>Most importantly, I was able to use the country data that I got from geocoding as a minimum viable model to identify discrepancies in country codes captured in the bank's source systems. SWIFT announced that in November 2020 it would remove free-format message fields to ensure that payer and beneficiary data is systematically captured and exchanged. Hopefully, this would eliminate the need to validate the accuracy of customer information captured from parsing the payment messages. But until then, there is always a risk associated with inaccurate or incomplete data, and the banks need to be vigilant about it.</p>
 
 
 
