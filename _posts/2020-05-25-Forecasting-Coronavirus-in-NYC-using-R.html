@@ -95,7 +95,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>Now, let’s see how naive models work.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">#Fit and forecast seasonal naive model</span></a>
 <a class="sourceLine" id="cb7-2" title="2">naive.fit &lt;-<span class="st"> </span><span class="kw">snaive</span>(train, <span class="dt">h=</span><span class="dv">15</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3">naive.fit</a></code></pre></div>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">snaive</span></a></code></pre></div>
 <p>
   <table id="t01">
 <thead>
@@ -234,7 +234,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
   </p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">#Fit and forecast random walk model with a trend</span></a>
 <a class="sourceLine" id="cb8-2" title="2">drif.fit &lt;-<span class="st"> </span><span class="kw">rwf</span>(train, <span class="dt">h=</span><span class="dv">15</span>, <span class="dt">drift=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb8-3" title="3">drif.fit</a></code></pre></div>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">drif.fit</span></a></code></pre></div>
 <p>
   <table id="t01">
 <thead>
@@ -389,7 +389,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>Our data does show several larger spikes around weeks 3, 4, and 5, but the pattern does not seem consistent. Just to make sure we are not missing anything, we will fit both models, using the Holt-Winters method. In addition to the weights component, this method includes a trend component and a seasonal component. Thus, it should be a better fit for our time series.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">#Fit and forecast the Exponential smoothing model using Holt-Winters multiplicative method</span></a>
 <a class="sourceLine" id="cb10-2" title="2">es.fit.m &lt;-<span class="st"> </span><span class="kw">hw</span>(train, <span class="dt">seasonal=</span><span class="st">&quot;multiplicative&quot;</span>, <span class="dt">h=</span><span class="dv">15</span>)</a>
-<a class="sourceLine" id="cb10-3" title="3">es.fit.m</a></code></pre></div>
+<a class="sourceLine" id="cb10-3" title="3"></span><span class="kw">es.fit.m</span></a></code></pre></div>
 <p>
 <table id="t01">
 <thead>
@@ -528,7 +528,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 </p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">#Fit and forecast the Exponential smoothing model using the Holt-Winters additive method</span></a>
 <a class="sourceLine" id="cb11-2" title="2">es.fit.a &lt;-<span class="st"> </span><span class="kw">hw</span>(train, <span class="dt">seasonal=</span><span class="st">&quot;additive&quot;</span>, <span class="dt">h=</span><span class="dv">15</span>)</a>
-<a class="sourceLine" id="cb11-3" title="3">es.fit.a</a></code></pre></div>
+<a class="sourceLine" id="cb11-3" title="3"></span><span class="kw">es.fit.a</span></a></code></pre></div>
 <p>
 <table id="t01">
 <thead>
