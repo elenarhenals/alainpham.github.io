@@ -1265,7 +1265,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
  <p>Although both forecasts are pretty close, I think it’s clear that our first model, ARIMA(0,2,1)x(0,1,1)[7], produced a more accurate forecast.</p>
 <p>However, let’s still calculate MAE and RMSE to see the difference in error measures between the two models.</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="co">#ARIMA(0,2,1)x(0,1,1)[7]</span></a>
-<a class="sourceLine" id="cb48-2" title="2"></span>(sarima.forecast1<span class="op">$</span>pred, CasesConfirmedTs)</a></code></pre></div>
+<a class="sourceLine" id="cb48-2" title="2"></span><span class="kw">accuracy</span>(sarima.forecast1<span class="op">$</span>pred, CasesConfirmedTs)</a></code></pre></div>
 <p>
 <table id="t01">
 <thead>
