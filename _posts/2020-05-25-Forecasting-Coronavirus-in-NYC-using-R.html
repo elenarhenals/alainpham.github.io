@@ -82,20 +82,21 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>The decomposition plot shows that our time series has a clear weekly seasonality and an upward trend in weeks 1 through 4, followed by a downward trend, starting at week 5. With this information, we can build a couple of simple forecasting models commonly used in the real world.</p>
 </div>
 <div id="forecasting-with-simple-models" class="section level2">
-<h2>Forecasting with Simple Models</h2>
+<h4>Forecasting with Simple Models</h4>
 <p>In this section, I will cover the naive method with seasonality, the naive method with a trend, also known as the random walk model, and exponential smoothing with a trend and seasonality. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA models.</p>
 <p>Note that there are many other forecasting methods available, in addition to what I will cover in this tutorial. I strongly recommend that you familiarize yourself with those methods to understand what may be the best fit for your data. You can start with the same Hyndman and Athanasopoulos’ textbook I mentioned above.</p>
 <p>Before modeling, we need to create a training set using 46 observations, leaving the rest of 15 for testing.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">#Create a training set</span></a>
 <a class="sourceLine" id="cb6-2" title="2">train &lt;-<span class="st"> </span><span class="kw">subset</span>(CasesConfirmedTs, <span class="dt">end=</span><span class="kw">length</span>(CasesConfirmedTs)<span class="op">-</span><span class="dv">15</span>)</a></code></pre></div>
 <div id="naive-model" class="section level4">
-<h4>Naive Model</h4>
+<h5>Naive Model</h5>
 <p>The naive method is the simplest forecasting method that uses the most recent observation. We can fit the naive model and produce a forecast by using naive(). For seasonal data, we need to use snaive(), and rfr() for the data has a trend.</p>
 <p>Now, let’s see how naive models work.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">#Fit and forecast seasonal naive model</span></a>
 <a class="sourceLine" id="cb7-2" title="2">naive.fit &lt;-<span class="st"> </span><span class="kw">snaive</span>(train, <span class="dt">h=</span><span class="dv">15</span>)</a>
 <a class="sourceLine" id="cb7-3" title="3">knitr<span class="op">::</span><span class="kw">kable</span>(naive.fit)</a></code></pre></div>
-<table id="t01">
+<p>
+  <table id="t01">
 <thead>
 <tr class="header">
 <th></th>
@@ -229,10 +230,12 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 </tr>
 </tbody>
 </table>
+  </p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">#Fit and forecast random walk model with a trend</span></a>
 <a class="sourceLine" id="cb8-2" title="2">drif.fit &lt;-<span class="st"> </span><span class="kw">rwf</span>(train, <span class="dt">h=</span><span class="dv">15</span>, <span class="dt">drift=</span><span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb8-3" title="3">knitr<span class="op">::</span><span class="kw">kable</span>(drif.fit)</a></code></pre></div>
-<table id="t01">
+<p>
+  <table id="t01">
 <thead>
 <tr class="header">
 <th></th>
@@ -243,7 +246,6 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <th align="right">Hi 95</th>
 </tr>
 </thead>
-  <p>
 <tbody>
 <tr class="odd">
 <td>7.571429</td>
@@ -380,7 +382,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>Compare the actual observations with the forecasts produced by the naive models. These models show a pretty high forecast error and clearly do not provide a good fit for our data, which was expected.</p>
 </div>
 <div id="exponential-smoothing-with-trend-and-seasonality" class="section level4">
-<h4>Exponential Smoothing with Trend and Seasonality</h4>
+<h5>Exponential Smoothing with Trend and Seasonality</h5>
 <p>The next type of forecasting model we will cover is called exponential smoothing. Exponential smoothing models use weighted averages of past observations with higher weights for more recent observations and lower weights for older observations. Exponential smoothing models are very common as they can accommodate complex data containing trends and seasonality and are very simple to use.</p>
 <p>These models also let us specify the nature of seasonal variations. If a time series fluctuates consistently over time, then the additive method should be selected. The multiplicative method should be used if the fluctuations increase or decrease over time.</p>
 <p>Our data does show several larger spikes around weeks 3, 4, and 5, but the pattern does not seem consistent. Just to make sure we are not missing anything, we will fit both models, using the Holt-Winters method. In addition to the weights component, this method includes a trend component and a seasonal component. Thus, it should be a better fit for our time series.</p>
@@ -766,7 +768,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 </div>
 <div id="forecasting-using-arima-models" class="section level2">
  <hr>
-<h4Forecasting Using ARIMA Models</h4
+<h4>Forecasting Using ARIMA Models</h4
 <p>Our next big topic is ARIMA models. There is a lot of ground to cover in this section because ARIMA models require a deeper understanding of the time series components.</p>
 <p>Let’s begin.</p>
 <p>ARIMA or Autoregressive Integrated Moving Average Model is another widely used forecasting approach, which consists of the following components or terms:</p>
