@@ -775,15 +775,17 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>Our next big topic is ARIMA models. There is a lot of ground to cover in this section because ARIMA models require a deeper understanding of the time series components.</p>
 <p>Let’s begin.</p>
 <p>ARIMA or Autoregressive Integrated Moving Average Model is another widely used forecasting approach, which consists of the following components or terms:</p>
-<ol style="list-style-type: decimal">
+<ol style="list-style-type: circle">
 <li><p>Autoregressive (AR) term uses correlations between observations of the same variable at different times or lags to make predictions. These correlations are usually referred to as autocorrelations.</p></li>
 <li><p>Integrated (I) term refers to differencing, which is a way to stabilize the mean of a time series.</p></li>
 <li><p>Moving Average (MA) term uses past forecast errors to predict future values.</p></li>
 </ol>
 <p>To fit an ARIMA model, we need to analyze each of the model’s components and select the appropriate order. ARIMA models follow a specific order that can be written as ARIMA(p, d, q) where:</p>
-<p>p is the order of the AR term</p>
-<p>d is the differencing order</p>
-<p>q is the order of the MA term</p>
+<ol style="list-style-type: circle">
+ <li> <p>p is the order of the AR term</p></li>
+<li><p>d is the differencing order</p></li>
+<li><p>q is the order of the MA term</p></li>
+  </ol>
 <p>Later on, I will describe each of these terms in detail and show you how to determine the right order, but first, we need to cover a few important concepts.</p>
 <div id="stationary-vs.-non-stationary-time-series" class="section level4">
 <h5>tationary vs. Non-stationary Time series</h5
@@ -1004,7 +1006,7 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <div id="seasonal-arima-models" class="section level4">
 <h4>Seasonal ARIMA Models</h4>
 <p>ARIMA can also accommodate time series with seasonality using a seasonal ARIMA model. ARIMA’s seasonal model has a slightly different structure. It incorporates both non-seasonal and seasonal terms in the following order, ARIMA(p,d,q)x(P,D,Q)S where:</p>
-<ol style="list-style-type: decimal">
+<ol style="list-style-type: circle">
 <li>  <p>P = seasonal AR order (SAR)</p></li>
 <li><p>D = seasonal differencing</p></li>
 <li><p>Q = seasonal MA order (SMA)</p><li>
@@ -1069,13 +1071,13 @@ tags: [forecasting, R, ACF,  PACF, ARIMA, Differencing, Time Series, Time Series
 <p>We may discover that there are other significant lags as there are a few more spikes in the plot, but we will deal with this later.</p>
 <p>Now, we need to put all the terms together to create a model. Let’s take the time and review each term and how we derived it.</p>
 <b><p>Non-seasonal Terms:</p></b>
-<ol style="list-style-type: decimal">
+<ol style="list-style-type: circle">
 <li><p>AR term order = 0: PACF tailed off before the first seasonal lag, and ACF cut off after the first non-seasonal lag, suggesting no AR terms and an MA(1) term</p></li>
 <li><p>Differencing order = 2: recall that we differenced our time series twice to remove the trend</p></li>
 <li><p>MA term order = 1: PACF tailed off before the first seasonal lag, and ACF cut off after the first non-seasonal lag, suggesting MA(1) term</p></li>
 </ol>
 <b> <p>Seasonal Terms:</p></b>
-<ol style="list-style-type: decimal">  
+<ol style="list-style-type: circle">  
 <li><p>SAR term order = 0: PACF showed no significant seasonal lags</p></li>
 <li><p>Seasonal Differencing = 1: recall that we differenced our time series once to remove the seasonal trend</p></li>
 <li><p>SMA term order = 1: ACF showed one significant seasonal lag, suggesting SMA(1)</p></li>
