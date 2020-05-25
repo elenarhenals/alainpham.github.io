@@ -68,11 +68,11 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 <p>Once our data is transformed into a time series object, we can start analyzing it. This usually involves understanding the components of a time series that affect how it fluctuates over time. This is why time series analysis is called decomposition. In this section, we will cover it only at a high level, but we’ll do a deeper dive later on in this tutorial.</p>
 <p>A time series would usually have one or more of the following components:</p>
 <ol style="list-style-type: decimal">
-<li>Trend: upward or downward movement in observations over time</li>
-<li>Seasonality: trend occurring at known time intervals</li>
-<li>Cycle: longer-term upward or downward changes that may follow a business or economic cycle</li>
-<li>Autocorrelation: correlation between past and future values of a time series</li>
-<li>Random variance: fluctuations that are free of any visible, repeating, and detectable patterns over time</li>
+<li><b>Trend</b>: upward or downward movement in observations over time</li>
+<li><b>Seasonality</b>: trend occurring at known time intervals</li>
+<li><b>Cycle</b>: longer-term upward or downward changes that may follow a business or economic cycle</li>
+<li><b>Autocorrelation</b>: correlation between past and future values of a time series</li>
+<li><b>Random variance</b>: fluctuations that are free of any visible, repeating, and detectable patterns over time</li>
 </ol>
 <p>We can quickly gain an insight into the time series composition by calling the decompose() function and plotting the results, as shown below.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">CasesConfirmedTs <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">decompose</span>(<span class="dt">type=</span><span class="st">&quot;additive&quot;</span>) <span class="op">%&gt;%</span></a>
