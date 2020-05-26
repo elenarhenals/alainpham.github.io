@@ -6,7 +6,7 @@ html {
 body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
-	padding-top: 4.5em;
+	padding-top: 2em;
 	counter-reset: h1_1counter;
 	
 }
