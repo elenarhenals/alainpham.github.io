@@ -6,11 +6,28 @@ html {
 body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
-	padding-top: 3.5em;
-	
+	padding-top: 4.5em;
+	counter-reset: h1counter;
 	
 }
 
+h1 {
+	counter-reset: h2counter;
+}
+
+h2 {
+	counter-reset: h3counter;
+}
+
+h2:before {
+	content: counter(h2counter) ".\0000a0\0000a0";
+	counter-increment: h2counter;
+}
+
+h3:before {
+	content: counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
+	counter-increment: h3counter;
+}
 
 .container {
 	font-size: 1.3em;
