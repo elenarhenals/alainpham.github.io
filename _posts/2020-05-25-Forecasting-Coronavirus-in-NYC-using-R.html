@@ -112,7 +112,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 <a class="sourceLine" id="cb8-2" title="2">drif.fit &lt;-<span class="st"> </span><span class="kw">rwf</span>(train, <span class="dt">h=</span><span class="dv">15</span>, <span class="dt">drift=</span><span class="ot">TRUE</span>)</a>
 </code></pre></div>
 
-<p>Note that the same function that is used to fit the model also produces the forecast and prediction intervals.</p>
+<p>Note that the same function that is used to fit the model also produces the forecast and prediction intervals. Now, let's take a look at how accurate the naive forecasts are by visualizing them against the actuals.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co">#Plot Forecast vs. Actual for both models</span></a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="kw">autoplot</span>(CasesConfirmedTs, <span class="dt">main =</span> <span class="st">&quot;Naive Forecasts of COVID-19 Cases in NYC&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Confirmed Cases&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Week&quot;</span>, <span class="dt">color=</span><span class="st">&quot;#3CAEA3&quot;</span>, <span class="dt">size =</span> <span class="fl">0.8</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb9-3" title="3"><span class="st">  </span><span class="kw">autolayer</span>(naive.fit, <span class="dt">series=</span><span class="st">&quot;Naive with Seasonality&quot;</span>, <span class="dt">PI=</span><span class="ot">FALSE</span>, <span class="dt">size =</span> <span class="fl">0.8</span>)<span class="op">+</span></a>
@@ -124,7 +124,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 <p>Compare the actual observations with the forecasts produced by the naive models. These models show a pretty high forecast error and clearly do not provide a good fit for our data, which was expected.</p>
 </div>
 <div id="exponential-smoothing-with-trend-and-seasonality" class="section level4">
-<h5>Exponential Smoothing with Trend and Seasonality</h5>
+<h3>Exponential Smoothing with Trend and Seasonality</h3>
 <p>The next type of forecasting model we will cover is called exponential smoothing. Exponential smoothing models use weighted averages of past observations with higher weights for more recent observations and lower weights for older observations. Exponential smoothing models are very common as they can accommodate complex data containing trends and seasonality and are very simple to use.</p>
 <p>These models also let us specify the nature of seasonal variations. If a time series fluctuates consistently over time, then the additive method should be selected. The multiplicative method should be used if the fluctuations increase or decrease over time.</p>
 <p>Our data does show several larger spikes around weeks 3, 4, and 5, but the pattern does not seem consistent. Just to make sure we are not missing anything, we will fit both models, using the Holt-Winters method. In addition to the weights component, this method includes a trend component and a seasonal component. Thus, it should be a better fit for our time series.</p>
