@@ -7,7 +7,6 @@ body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
 	padding-top: 4.5em;
-	counter-reset: h1counter;
 	
 }
 
@@ -45,6 +44,13 @@ h3:before {
 	letter-spacing: 0.2em;
 }
 
+.jumbotron hh1 {
+	color: white;
+	letter-spacing: 0.3em;
+	font-size: 3em;
+	text-align: center;
+	letter-spacing: 0.2em;
+}
 
 .footer {
 	position: absolute;
@@ -53,7 +59,7 @@ h3:before {
 	bottom: 0;
 	width: 100%;
 	/* Set the fixed height of the footer here */
-	height: 8em;
+	height: 4em;
 	background-color: black;
 	bottom: 0;
 }
