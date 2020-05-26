@@ -7,31 +7,31 @@ body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
 	padding-top: 4.5em;
-	counter-reset: h1;
+	counter-reset: h1counter;
 	
 }
 
 h1 {
-	counter-reset: h2;
+	counter-reset: h2counter;
 }
 
 h2 {
-	counter-reset: h3;
+	counter-reset: h3counter;
 }
 
 h2:before {
-        counter-increment: h2;
-        content: counter(h2) ". "
+	content: counter(h2counter) ".\0000a0\0000a0";
+	counter-increment: h2counter;
 }
 
 h3:before {
-	counter-increment: h3;
-        content: counter(h2) "." counter(h3) ". "
+	content: counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
+	counter-increment: h3counter;
+}
 
 .container {
 	font-size: 1.3em;
 }
-
 .jumbotron {
 	background: #4db3a5;
 }
@@ -59,7 +59,7 @@ h3:before {
 	bottom: 0;
 	width: 100%;
 	/* Set the fixed height of the footer here */
-	height: 4em;
+	height: 2em;
 	background-color: black;
 	bottom: 0;
 }
