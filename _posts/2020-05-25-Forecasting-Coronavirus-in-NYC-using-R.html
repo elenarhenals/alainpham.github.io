@@ -83,304 +83,35 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 <li><b>Autocorrelation</b>: correlation between past and future values of a time series</li>
 <li><b>Random variance</b>: fluctuations that are free of any visible, repeating, and detectable patterns over time</li>
 </ol>
-<p>We can quickly gain an insight into the time series composition by calling the decompose() function and plotting the results, as shown below.</p>
+<p>We can quickly gain an insight into the time series composition by calling the <a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/decompose" target = "_blank">decompose()</a> function and plotting the results, as shown below.</p>
+  
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">CasesConfirmedTs <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">decompose</span>(<span class="dt">type=</span><span class="st">&quot;additive&quot;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span><span class="kw">autoplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Week&quot;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb5-3" title="3"><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Decomposition of NYC COVID-19 Cases Time Series&quot;</span>)<span class="op">+</span></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">hjust =</span><span class="fl">0.5</span>))</a></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The decomposition plot shows that our time series has a clear weekly seasonality and an upward trend in weeks 1 through 4, followed by a downward trend, starting at week 5. With this information, we can build a couple of simple forecasting models commonly used in the real world.</p>
+<p>The decomposition plot shows that our time series has a weekly seasonality and an upward trend in weeks 1 through 4, followed by a downward trend, starting at week 5. With this information, we can build a couple of simple forecasting models commonly used in the real world.</p>
 </div>
 <div id="forecasting-with-simple-models" class="section level2">
 <hr>
 <h2>Forecasting with Simple Models</h2>
-<p>In this section, I will cover the naive method with seasonality, the naive method with a trend, also known as the random walk model, and exponential smoothing with a trend and seasonality. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA models.</p>
+<p>In this section, I will cover the naive method with seasonality, the naive method with a trend, also known as the random walk model, and exponential smoothing with a trend and seasonality, also known as the Holt-Winters method. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA.</p>
 <p>Note that there are many other forecasting methods available, in addition to what I will cover in this tutorial. I strongly recommend that you familiarize yourself with those methods to understand what may be the best fit for your data. You can start with the same Hyndman and Athanasopoulos’ textbook I mentioned above.</p>
-<p>Before modeling, we need to create a training set using 46 observations, leaving the rest of 15 for testing.</p>
+<p>Before modeling, we need to create a training set using 46 observations, leaving the rest 15 for testing.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">#Create a training set</span></a>
 <a class="sourceLine" id="cb6-2" title="2">train &lt;-<span class="st"> </span><span class="kw">subset</span>(CasesConfirmedTs, <span class="dt">end=</span><span class="kw">length</span>(CasesConfirmedTs)<span class="op">-</span><span class="dv">15</span>)</a></code></pre></div>
 <div id="naive-model" class="section level4">
-<h5>Naive Model</h5>
-<p>The naive method is the simplest forecasting method that uses the most recent observation. We can fit the naive model and produce a forecast by using naive(). For seasonal data, we need to use snaive(), and rfr() for the data has a trend.</p>
+<h3>Naive Model</h3>
+<p>The naive method is the simplest forecasting method that uses the most recent observation. We can fit the naive model and produce a forecast by using <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/rwf", target="_blank">naive()</a>. For seasonal data, we need to use <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/rwf", target="_blank">snaive()</a>, and <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/rwf", target="_blank">rfr()</a> for the data that has a trend.</p>
 <p>Now, let’s see how naive models work.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">#Fit and forecast seasonal naive model</span></a>
 <a class="sourceLine" id="cb7-2" title="2">naive.fit &lt;-<span class="st"> </span><span class="kw">snaive</span>(train, <span class="dt">h=</span><span class="dv">15</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">snaive</span></a></code></pre></div>
-<p>
-  <table id="t01">
-<thead>
-<tr class="header">
-<th></th>
-<th align="right">Point Forecast</th>
-<th align="right">Lo 80</th>
-<th align="right">Hi 80</th>
-<th align="right">Lo 95</th>
-<th align="right">Hi 95</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>7.571429</td>
-<td align="right">3453</td>
-<td align="right">1469.53874</td>
-<td align="right">5436.461</td>
-<td align="right">419.55777</td>
-<td align="right">6486.442</td>
-</tr>
-<tr class="even">
-<td>7.714286</td>
-<td align="right">3500</td>
-<td align="right">1516.53874</td>
-<td align="right">5483.461</td>
-<td align="right">466.55777</td>
-<td align="right">6533.442</td>
-</tr>
-<tr class="odd">
-<td>7.857143</td>
-<td align="right">2080</td>
-<td align="right">96.53874</td>
-<td align="right">4063.461</td>
-<td align="right">-953.44223</td>
-<td align="right">5113.442</td>
-</tr>
-<tr class="even">
-<td>8.000000</td>
-<td align="right">2285</td>
-<td align="right">301.53874</td>
-<td align="right">4268.461</td>
-<td align="right">-748.44223</td>
-<td align="right">5318.442</td>
-</tr>
-<tr class="odd">
-<td>8.142857</td>
-<td align="right">3714</td>
-<td align="right">1730.53874</td>
-<td align="right">5697.461</td>
-<td align="right">680.55777</td>
-<td align="right">6747.442</td>
-</tr>
-<tr class="even">
-<td>8.285714</td>
-<td align="right">3005</td>
-<td align="right">1021.53874</td>
-<td align="right">4988.461</td>
-<td align="right">-28.44223</td>
-<td align="right">6038.442</td>
-</tr>
-<tr class="odd">
-<td>8.428571</td>
-<td align="right">3419</td>
-<td align="right">1435.53874</td>
-<td align="right">5402.461</td>
-<td align="right">385.55777</td>
-<td align="right">6452.442</td>
-</tr>
-<tr class="even">
-<td>8.571429</td>
-<td align="right">3453</td>
-<td align="right">647.96218</td>
-<td align="right">6258.038</td>
-<td align="right">-836.93514</td>
-<td align="right">7742.935</td>
-</tr>
-<tr class="odd">
-<td>8.714286</td>
-<td align="right">3500</td>
-<td align="right">694.96218</td>
-<td align="right">6305.038</td>
-<td align="right">-789.93514</td>
-<td align="right">7789.935</td>
-</tr>
-<tr class="even">
-<td>8.857143</td>
-<td align="right">2080</td>
-<td align="right">-725.03782</td>
-<td align="right">4885.038</td>
-<td align="right">-2209.93514</td>
-<td align="right">6369.935</td>
-</tr>
-<tr class="odd">
-<td>9.000000</td>
-<td align="right">2285</td>
-<td align="right">-520.03782</td>
-<td align="right">5090.038</td>
-<td align="right">-2004.93514</td>
-<td align="right">6574.935</td>
-</tr>
-<tr class="even">
-<td>9.142857</td>
-<td align="right">3714</td>
-<td align="right">908.96218</td>
-<td align="right">6519.038</td>
-<td align="right">-575.93514</td>
-<td align="right">8003.935</td>
-</tr>
-<tr class="odd">
-<td>9.285714</td>
-<td align="right">3005</td>
-<td align="right">199.96218</td>
-<td align="right">5810.038</td>
-<td align="right">-1284.93514</td>
-<td align="right">7294.935</td>
-</tr>
-<tr class="even">
-<td>9.428571</td>
-<td align="right">3419</td>
-<td align="right">613.96218</td>
-<td align="right">6224.038</td>
-<td align="right">-870.93514</td>
-<td align="right">7708.935</td>
-</tr>
-<tr class="odd">
-<td>9.571429</td>
-<td align="right">3453</td>
-<td align="right">17.54432</td>
-<td align="right">6888.456</td>
-<td align="right">-1801.07606</td>
-<td align="right">8707.076</td>
-</tr>
-</tbody>
-</table>
-  </p>
+</code></pre></div>
+
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">#Fit and forecast random walk model with a trend</span></a>
 <a class="sourceLine" id="cb8-2" title="2">drif.fit &lt;-<span class="st"> </span><span class="kw">rwf</span>(train, <span class="dt">h=</span><span class="dv">15</span>, <span class="dt">drift=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="kw">drif.fit</span></a></code></pre></div>
-<p>
-  <table id="t01">
-<thead>
-<tr class="header">
-<th></th>
-<th align="right">Point Forecast</th>
-<th align="right">Lo 80</th>
-<th align="right">Hi 80</th>
-<th align="right">Lo 95</th>
-<th align="right">Hi 95</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>7.571429</td>
-<td align="right">3494.511</td>
-<td align="right">2362.49356</td>
-<td align="right">4626.529</td>
-<td align="right">1763.2397</td>
-<td align="right">5225.783</td>
-</tr>
-<tr class="even">
-<td>7.714286</td>
-<td align="right">3570.022</td>
-<td align="right">1951.41745</td>
-<td align="right">5188.627</td>
-<td align="right">1094.5798</td>
-<td align="right">6045.465</td>
-</tr>
-<tr class="odd">
-<td>7.857143</td>
-<td align="right">3645.533</td>
-<td align="right">1641.72371</td>
-<td align="right">5649.343</td>
-<td align="right">580.9710</td>
-<td align="right">6710.096</td>
-</tr>
-<tr class="even">
-<td>8.000000</td>
-<td align="right">3721.044</td>
-<td align="right">1382.75905</td>
-<td align="right">6059.330</td>
-<td align="right">144.9455</td>
-<td align="right">7297.143</td>
-</tr>
-<tr class="odd">
-<td>8.142857</td>
-<td align="right">3796.556</td>
-<td align="right">1155.18128</td>
-<td align="right">6437.930</td>
-<td align="right">-243.0778</td>
-<td align="right">7836.189</td>
-</tr>
-<tr class="even">
-<td>8.285714</td>
-<td align="right">3872.067</td>
-<td align="right">949.20993</td>
-<td align="right">6794.923</td>
-<td align="right">-598.0570</td>
-<td align="right">8342.190</td>
-</tr>
-<tr class="odd">
-<td>8.428571</td>
-<td align="right">3947.578</td>
-<td align="right">759.11750</td>
-<td align="right">7136.038</td>
-<td align="right">-928.7514</td>
-<td align="right">8823.907</td>
-</tr>
-<tr class="even">
-<td>8.571429</td>
-<td align="right">4023.089</td>
-<td align="right">581.22598</td>
-<td align="right">7464.952</td>
-<td align="right">-1240.7862</td>
-<td align="right">9286.964</td>
-</tr>
-<tr class="odd">
-<td>8.714286</td>
-<td align="right">4098.600</td>
-<td align="right">413.01788</td>
-<td align="right">7784.182</td>
-<td align="right">-1538.0114</td>
-<td align="right">9735.211</td>
-</tr>
-<tr class="even">
-<td>8.857143</td>
-<td align="right">4174.111</td>
-<td align="right">252.68729</td>
-<td align="right">8095.535</td>
-<td align="right">-1823.1891</td>
-<td align="right">10171.411</td>
-</tr>
-<tr class="odd">
-<td>9.000000</td>
-<td align="right">4249.622</td>
-<td align="right">98.89121</td>
-<td align="right">8400.353</td>
-<td align="right">-2098.3731</td>
-<td align="right">10597.618</td>
-</tr>
-<tr class="even">
-<td>9.142857</td>
-<td align="right">4325.133</td>
-<td align="right">-49.39807</td>
-<td align="right">8699.665</td>
-<td align="right">-2365.1351</td>
-<td align="right">11015.402</td>
-</tr>
-<tr class="odd">
-<td>9.285714</td>
-<td align="right">4400.644</td>
-<td align="right">-192.98550</td>
-<td align="right">8994.274</td>
-<td align="right">-2624.7063</td>
-<td align="right">11425.995</td>
-</tr>
-<tr class="even">
-<td>9.428571</td>
-<td align="right">4476.156</td>
-<td align="right">-332.51381</td>
-<td align="right">9284.825</td>
-<td align="right">-2878.0696</td>
-<td align="right">11830.381</td>
-</tr>
-<tr class="odd">
-<td>9.571429</td>
-<td align="right">4551.667</td>
-<td align="right">-468.50465</td>
-<td align="right">9571.838</td>
-<td align="right">-3126.0228</td>
-<td align="right">12229.356</td>
-</tr>
-</tbody>
-</table>
-  </p>
+</code></pre></div>
+
 <p>Note that the same function that is used to fit the model also produces the forecast and prediction intervals.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co">#Plot Forecast vs. Actual for both models</span></a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="kw">autoplot</span>(CasesConfirmedTs, <span class="dt">main =</span> <span class="st">&quot;Naive Forecasts of COVID-19 Cases in NYC&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Confirmed Cases&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;Week&quot;</span>, <span class="dt">color=</span><span class="st">&quot;#3CAEA3&quot;</span>, <span class="dt">size =</span> <span class="fl">0.8</span>) <span class="op">+</span></a>
