@@ -7,26 +7,26 @@ body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
 	padding-top: 4.5em;
+	counter-reset: h1;
 	
 }
 
 h1 {
-	counter-reset: h2counter;
+	counter-reset: h2;
 }
 
 h2 {
-	counter-reset: h3counter;
+	counter-reset: h3;
 }
 
 h2:before {
-	content: counter(h2counter) ".\0000a0\0000a0";
-	counter-increment: h2counter;
+        counter-increment: h2;
+        content: counter(h2) ". "
 }
 
 h3:before {
-	content: counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
-	counter-increment: h3counter;
-}
+	counter-increment: h3;
+        content: counter(h2) "." counter(h3) ". "
 
 .container {
 	font-size: 1.3em;
