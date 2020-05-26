@@ -7,11 +7,11 @@ body {
 	/* Margin bottom by footer height */
 	margin-bottom: 8em;
 	padding-top: 4.5em;
-	counter-reset: h1counter;
+	counter-reset: h1_1counter;
 	
 }
 
-h1 {
+h1_1 {
 	counter-reset: h2counter;
 }
 
@@ -45,7 +45,7 @@ h3:before {
 	letter-spacing: 0.2em;
 }
 
-.jumbotron h2 {
+.jumbotron h1_1 {
 	color: white;
 	letter-spacing: 0.3em;
 	font-size: 3em;
