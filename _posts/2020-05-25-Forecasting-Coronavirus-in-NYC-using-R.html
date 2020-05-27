@@ -36,7 +36,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
   </ul>
 <li><a href="#arima">Forecasting with ARIMA Models</a></li>
   <ul>
-  <li><a href="#stationary">Stationary vs. Non-stationary Time series</a></li>
+  <li><a href="#stationary">Stationary vs. Non-stationary Time Series</a></li>
   <li><a href="#heterosc">Stabilizing Variance </a></li>
   <li><a href="#diff">Non-Seasonal Differencing </a></li>  
   <li><a href="#sdiff">Seasonal Differencing </a></li>
@@ -257,7 +257,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <p>Later on, I will describe each of these terms in detail and show you how to determine the right order, but first, we need to cover a few important concepts.</p>
   
 <hr>
-<h3 id="stationary">Stationary vs. Non-stationary Time series</h3>
+<h3 id="stationary">Stationary vs. Non-stationary Time Series</h3>
 <p>The first concept we will go over is stationarity in a time series. A time series is considered stationary if its mean, variance, and autocorrelation structure do not change over time.</p>
 <p>Why is this concept so important? Because it helps determine the right order of ARIMA models. To do that, we need to identify every component that makes the time series change its behavior over time and strip it away until the series becomes stationary.</p>
 
@@ -400,7 +400,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 
 <hr>
 <h3 id="ar">Autoregressive Models</h3>
-<p>Next, in this tutorial, I will explain the AR term of ARIMA model. AR stands for autoregressive models. These models are similar to linear regression, but instead of different independent variables, they use the same variable at different times. Let’s look at the stock prices, for example. Yesterday’s price (lag = 1) and the day before yesterday’s price (lag = 2) may be good indicators of the price today (lag = 0), so we would use 2 lags to predict today's price.</p>
+<p>Next, in this tutorial, I will explain the AR term of ARIMA model. AR stands for autoregressive models. These models are similar to linear regression, but instead of different independent variables, they use the same variable at different times. Let’s look at the stock prices again. Yesterday’s price (lag = 1) and the day before yesterday’s price (lag = 2) may be good indicators of the price today (lag = 0), so we would use 2 lags to predict today's price.</p>
 <p>The simplest autoregressive model is the first order AR model or AR(1), which uses one lag to produce a forecast. To fit AR(1) model, we can use the <a href="https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/arima" target="_blank">arima()</a> function by specifying the order = c(1,0,0).</p>
 
 <hr>
@@ -451,7 +451,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <li><p><b>Q</b> = seasonal MA order (SMA)</p></li>
 <li><p><b>S</b> = frequency</p></li>
 </ol>
-<p>The table below describes ACF and PACF behavior characteristic to ARIMA’s seasonal terms, SAR, SMA, and SARMA. It works the same way as non-seasonal terms, but instead of the first few lags, we need to be looking at spikes at seasonal lags.</p>
+<p>The table below describes ACF and PACF behavior characteristic to ARIMA’s seasonal terms, SAR, SMA, and SARMA. It works the same way as above, but instead of the first few lags, we need to be looking at the spikes at seasonal lags.</p>
 <p>
 <table id="t01">
 <thead>
@@ -512,7 +512,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <li><p><b>SAR term order = 0</b>: PACF showed no significant seasonal lags</p></li>
 <li><p><b>Seasonal Differencing = 1</b>: recall that we differenced our time series once to remove the seasonal trend</p></li>
 <li><p><b>SMA term order = 1</b>: ACF showed one significant seasonal lag, suggesting SMA(1)</p></li>
-<li><p>Frequency = 7</p></li>
+<li><p><b>Frequency = 7</b></p></li>
 </ol>
 <p>This is how the model looks like after we put all the terms together: ARIMA(0,2,1)x(0,1,1)[7]</p>
 <p>Now, let’s go ahead and fit the model. Remember to use the original time series after the Box-Cox transformation but before the differencing since we are already specifying the differencing order in the model.</p>
@@ -543,7 +543,8 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
   
 <p>This model does not show any drastic changes in the residuals plots. There are slight improvements to the QQ plot and the Ljung-Box statistic plot. Since both of these models pass the residuals test, how do we know which one is better?</p>
 <p>We can compare ARIMA models by using AIC, AICc, or BIC. All three of them estimate prediction error. The model that shows the lowest prediction error is a better fit. AICc is commonly used with time series because it adds a penalty for model complexity.</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">#Summary of sarima.fit1</a><a class="sourceLine" id="cb41-2" title="2">sarima.fit1</a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">#Summary of sarima.fit1</a>
+<a class="sourceLine" id="cb41-2" title="2">sarima.fit1</a></code></pre></div>
 <pre><code>## $fit
 ## 
 ## Call:
@@ -575,7 +576,8 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 ## 
 ## $BIC
 ## [1] 11.56648</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1">#Summary of sarima.fit2</a><a class="sourceLine" id="cb43-2" title="2">sarima.fit2</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1">#Summary of sarima.fit2</a>
+<a class="sourceLine" id="cb43-2" title="2">sarima.fit2</a></code></pre></div>
 <pre><code>## $fit
 ## 
 ## Call:
