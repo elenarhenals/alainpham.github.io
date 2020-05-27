@@ -114,7 +114,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <h2 id="simple models">Forecasting with Simple Models</h2>
 <p>In this section, I will cover the naive and exponential smoothing methods. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA.</p>
 <p>Note that there are many other forecasting methods available, in addition to what I will cover in this tutorial. I strongly recommend that you familiarize yourself with those methods to understand what may be the best fit for your data. You can start with the same Hyndman and Athanasopoulos’ textbook I mentioned above.</p>
-<p>Before modeling, we need to create a training set using 46 observations, leaving the rest 15 for testing.</p>
+<p>Before modeling, we will create a training set using 46 observations, leaving the rest 15 for testing.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">#Create a training set</span></a>
 <a class="sourceLine" id="cb6-2" title="2">train &lt;-<span class="st"> </span><span class="kw">subset</span>(CasesConfirmedTs, <span class="dt">end=</span><span class="kw">length</span>(CasesConfirmedTs)<span class="op">-</span><span class="dv">15</span>)</a></code></pre></div>
 
