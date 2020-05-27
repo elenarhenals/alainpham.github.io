@@ -256,10 +256,9 @@ tags: [Forecasting, R, ACF, PACF, ARIMA, Differencing, Time Series, Time Series 
 <h3 id="stationary">Stationary vs. Non-stationary Time series</h3>
 <p>The first concept we will go over is stationarity in a time series. A time series is considered stationary if its mean, variance, and autocorrelation structure do not change over time.</p>
 <p>Why is this concept so important? Because it helps determine the right order of ARIMA models. To do that, we need to identify every component that makes the time series change its behavior over time and strip it away until the series becomes stationary.</p>
-</div>
-<div id="stabilizing-variance" class="section level4">
+
 <hr>
-<h3 id="heterosc">Stabilizing Variance</h3>
+ <h3 id="heterosc">Stabilizing Variance</h3>
 <p>A stationary time series maintains constant variance over time. If your time series fluctuations increase or decrease with time, then it’s heteroscedastic. In the context of a time series, heteroscedasticity refers to non-constant variance exhibited by the time series.</p>
 <p>The Box-Cox transformation is a common method used to transform a time series exhibiting non-constant variance. It uses the lambda parameter to inform the level of the transformation. The lambda parameter is nothing but an exponent, varying from -5 to 5. The optimal lambda is the one that results in the best approximation of a normal distribution curve.</p>
 <p>Below are the most common transformations:</p>
