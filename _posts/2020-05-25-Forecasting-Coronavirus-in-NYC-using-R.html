@@ -145,7 +145,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <p>These models also let us specify the nature of seasonal variations. If a time series fluctuates consistently over time, then the additive method should be selected. The multiplicative method should be used if the fluctuations increase or decrease over time.</p>
 <p>Our data does show several larger spikes around weeks 3, 4, and 5, but the pattern does not seem consistent. Just to make sure we are not missing anything, we will fit both additive and multiplicative models, using the Holt-Winters method for data with trend and seasonality. </p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">#Fit and forecast the Exponential Smoothing model using Holt-Winters multiplicative method</span></a>
-<a class="sourceLine" id="cb10-2" title="2">es.fit.m &lt;-<span class="st"> </span><span class="kw">hw</span>(train, <span class="dt">seasonal=</span><span class="st">&quot;multiplicative&quot;</span>, <span class="dt">h=</span><span class="dv">15</span>)/a>
+<a class="sourceLine" id="cb10-2" title="2">es.fit.m &lt;-<span class="st"> </span><span class="kw">hw</span>(train, <span class="dt">seasonal=</span><span class="st">&quot;multiplicative&quot;</span>, <span class="dt">h=</span><span class="dv">15</span>)</a>
 </code></pre></div>
 
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">#Fit and forecast the Exponential Smoothing model using the Holt-Winters additive method</span></a>
@@ -355,7 +355,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <h3 id="diff">Non-Seasonal Differencing</h3>
 <p>If the Box-Cox transformation helps stabilize the variance, non-seasonal differencing helps stabilize the mean of a time series by removing any non-seasonal trends. It’s doing so by calculating increments or changes in the time series.</p>
 <p>We can take daily stock prices as an example. Let’s say that this daily stock prices series exhibits an upward trend. If we difference it at lag=1 (1 day), we will get daily price changes, which should remove the trend. If the trend persists, we may need to difference the time series again.</p>
-<p>In R, this can be accomplished by the diff() command. This function takes two arguments. The first is the lag, which is the number of periods, and the second is differences, which is the order of the difference (e.g., how many times diff() is called).</p>
+<p>In R, this can be accomplished by the diff() command. This function takes two arguments. The first is the lag, which is the number of periods, and the second is differences, which is the order of the difference (i.e., how many times diff() is called).</p>
 <p>Now, let’s see how it works.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">#Time series after differencing</span></a>
 <a class="sourceLine" id="cb18-2" title="2">CasesConfirmedTs3 &lt;-<span class="st"> </span><span class="kw">diff</span>(CasesConfirmedTs2, <span class="dt">lag=</span> <span class="dv">1</span>)</a>
@@ -410,7 +410,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <p>To determine the seasonal differencing order (i.e., how many times, if any, we need to seasonally difference our data), we can use the <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/nsdiffs" target="_blank">nsdiffs()</a> function from the forecast package.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">CasesConfirmedTs3 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nsdiffs</span>()</a></code></pre></div>
 <pre><code>## [1] 1</code></pre>
-<p>According to <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/nsdiffs" target="_blank">nsdiff()</a> our data needs first order seasonal differencing to remove the seasonal trend. We can do it by using the same diff() function, but this time setting the lag to 7. </p>
+<p>According to <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/nsdiffs" target="_blank">nsdiffs()</a>, our data needs first order seasonal differencing to remove the seasonal trend. We can do it by using the same diff() function, but this time setting the lag to 7. </p>
 <p>Let's see how it works</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="co">#1st order seasonal differencing</span></a>
 <a class="sourceLine" id="cb29-2" title="2">CasesConfirmedTs4 &lt;-<span class="st"> </span><span class="kw">diff</span>(CasesConfirmedTs3, <span class="dt">lag=</span><span class="dv">7</span>)</a>
