@@ -72,7 +72,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
   
 <div="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Transforming data to a time series object with ts()</span></a>
 <a class="sourceLine" id="cb3-2" title="2">CasesConfirmedTs =<span class="st"> </span><span class="kw">ts</span>(CasesConfirmed<span class="op">$</span>CASE_COUNT, <span class="dt">frequency =</span> <span class="dv">7</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3">CasesConfirmedTs</a></code></pre></div>
+<a class="sourceLine" id="cb3-3" title="3">CasesConfirmedTs</a></code>
 <pre><code>## Time Series:
 ## Start = c(1, 1) 
 ## End = c(9, 5) 
@@ -83,6 +83,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 ## [46] 3419 2786 2399 1516  997 2237 2652 2282 1949 1708 1003  721 1279 1083  604
 ## [61]    6</code></pre>
 <p>The ts() function also lets you specify your start and end periods. For example, if you are working with monthly sales data that starts on January 1, 2015, you should set the start argument to c(2015, 1) and frequency to 12.</p>
+
 <hr>
 <h2 id="decomposition">Decomposing Time Series</h2>
 <p>Once our data is transformed into a time series object, we can start analyzing it. This usually involves understanding the components of a time series that affect how it fluctuates over time. This is why time series analysis is called decomposition. In this section, we will cover it only at a high level, but we’ll do a deeper dive later on in this tutorial.</p>
