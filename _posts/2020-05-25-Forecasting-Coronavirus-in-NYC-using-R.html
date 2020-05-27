@@ -72,7 +72,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
   
 <div="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Transforming data to a time series object with ts()</span></a>
 <a class="sourceLine" id="cb3-2" title="2">CasesConfirmedTs =<span class="st"> </span><span class="kw">ts</span>(CasesConfirmed<span class="op">$</span>CASE_COUNT, <span class="dt">frequency =</span> <span class="dv">7</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3">CasesConfirmedTs</a></code></div>
+<a class="sourceLine" id="cb3-3" title="3">CasesConfirmedTs</a></code>
 <pre><code>## Time Series:
 ## Start = c(1, 1) 
 ## End = c(9, 5) 
@@ -81,7 +81,7 @@ We can accomplish that with the ts() function. ts() requires specifying the freq
 ## [16] 3505 4390 4734 4924 4991 3386 3437 6015 5170 5026 5645 5518 3752 3616 6212
 ## [31] 5924 5406 4871 4240 3565 2717 3211 4055 3800 3453 3500 2080 2285 3714 3005
 ## [46] 3419 2786 2399 1516  997 2237 2652 2282 1949 1708 1003  721 1279 1083  604
-## [61] 6</code></pre>
+## [61] 6</code></pre></div>
 <p>The ts() function also lets you specify your start and end periods. For example, if you are working with monthly sales data that starts on January 1, 2015, you should set the start argument to c(2015, 1) and frequency to 12.</p>
 
 <hr>
