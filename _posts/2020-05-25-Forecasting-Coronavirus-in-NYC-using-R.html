@@ -71,7 +71,7 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <p>Many visualization and forecasting functions in R only work with time series objects. I highly recommend converting your data into a time series object to unlock all that functionality. We can accomplish that with the ts() function. ts() requires specifying the frequency of the time series, which refers to the number of observations before the seasonal pattern repeats. For example, if you are working with monthly sales data, then your frequency would be 12. Our data contains daily observations. Usually, for daily data, the frequency would be either 365 or 7. Since our data covers only a couple of weeks, we will set the frequency argument to 7.</p>
   
 <p>If you are working with high-frequency data, it may get a little tricky. For example, the data that is observed every minute may exhibit several seasonal patterns at the same time (e.g., hourly (60), daily (60x24), and weekly (60x24x7)). I recommend reading about complex seasonality in <a href="https://otexts.com/fpp2/" target="_blank">Rob Hyndman and George Athanasopoulos’ online textbook Forecasting: Principles and Practice</a>.</p>
-  
+<p>Here is how you use ts() in R. 
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># Transforming data to a time series object with ts()</span></a>
 <a class="sourceLine" id="cb3-2" title="2">CasesConfirmedTs =<span class="st"> </span><span class="kw">ts</span>(CasesConfirmed<span class="op">$</span>CASE_COUNT, <span class="dt">frequency =</span> <span class="dv">7</span>)</a>
 <a class="sourceLine" id="cb3-3" title="3">CasesConfirmedTs</a></code></pre></div>
@@ -85,12 +85,12 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 ## [46] 3419 2786 2399 1516  997 2237 2652 2282 1949 1708 1003  721 1279 1083  604
 ## [61]    6</code></pre>
 
-<p>The ts() function also lets you specify your start and end periods. For example, if you are working with monthly sales data that starts on January 1, 2015, you should set the start argument to c(2015, 1) and frequency to 12.</p>
+<p>This is the structure of a time series object. Note that the ts() function also lets you specify your start and end periods. For example, if you are working with monthly sales data that starts on January 1, 2015, you should set the start argument to c(2015, 1) and frequency to 12.</p>
 </div>
 
 <hr>
 <h2 id="simple models">Forecasting with Simple Models</h2>
-<p>In this section, I will cover the naive method with seasonality, the naive method with a trend, also known as the random walk model, and exponential smoothing with a trend and seasonality, also known as the Holt-Winters method. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA.</p>
+<p>In this section, I will cover the naive and exponential smoothing methods. Later on, we will cover more complex models such as ARIMA and seasonal ARIMA.</p>
 <p>Note that there are many other forecasting methods available, in addition to what I will cover in this tutorial. I strongly recommend that you familiarize yourself with those methods to understand what may be the best fit for your data. You can start with the same Hyndman and Athanasopoulos’ textbook I mentioned above.</p>
 <p>Before modeling, we need to create a training set using 46 observations, leaving the rest 15 for testing.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">#Create a training set</span></a>
@@ -150,7 +150,8 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 <p>The two most commonly used forecasting model performance measures are mean absolute error (MAE), and root mean squared error (RMSE). MAE is calculated by averaging all absolute forecast errors. RMSE is calculated by taking the square root of the average of squared forecast errors. The model with smaller MAE or RMSE in a testing set has a better performance.</p>
 <p>I will go ahead and calculate MAE and RMSE for both of our exponential smoothing models and see which one is better. Luckily, we don’t have to calculate each of these measures separately because the <a href="https://www.rdocumentation.org/packages/forecast/versions/8.12/topics/accuracy" target="_blank"> accuracy()</a> function calculates all the forecasting error measures for us.</p>
   
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">#Accuracy measures for Holt-Winters additive model</span></a><a class="sourceLine" id="cb13-2" title="2"><span class="kw">accuracy</span>(es.fit.a, CasesConfirmedTs)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">#Accuracy measures for Holt-Winters additive model</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">accuracy</span>(es.fit.a, CasesConfirmedTs)</a></code></pre></div>
 <p>
 <table id="t01">
 <thead>
@@ -192,7 +193,8 @@ The data is publicly available on <a href="https://www1.nyc.gov/site/doh/covid/c
 </tbody>
 </table>
 </p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">#Accuracy measures for Holt-Winters multiplicative model</span></a><a class="sourceLine" id="cb14-2" title="2"><span class="kw">accuracy</span>(es.fit.m, CasesConfirmedTs)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">#Accuracy measures for Holt-Winters multiplicative model</a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="kw">accuracy</span>(es.fit.m, CasesConfirmedTs)</a></code></pre></div>
 <p>
 <table id="t01">
 <thead>
